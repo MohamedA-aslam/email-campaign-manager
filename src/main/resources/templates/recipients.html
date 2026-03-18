@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Recipients</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
+        .flex { display: flex; gap: 25px; margin-top: 15px; }
+        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .form-box { width: 300px; flex-shrink: 0; }
+        label { display: block; margin-top: 12px; font-weight: bold; }
+        input, select { width: 100%; padding: 7px; margin-top: 4px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        input:focus, select:focus { outline: none; border-color: #0070f3; box-shadow: 0 0 0 2px rgba(0,112,243,0.15); }
+        .btn { padding: 5px 12px; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85em; border: none; cursor: pointer; }
+        .btn-submit { margin-top: 15px; padding: 8px 20px; background: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
+        .btn-submit:hover { background: #005ed4; }
+        .btn-green { background: #28a745; }
+        .btn-green:hover { background: #218838; }
+        .btn-red { background: #dc3545; }
+        .btn-red:hover { background: #c82333; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #0070f3; color: white; padding: 10px; text-align: left; }
+        td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f9f9f9; }
+        .alert { padding: 10px 15px; border-radius: 5px; margin-bottom: 10px; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-error { background: #f8d7da; color: #721c24; }
+        .alert-warn { background: #fff3cd; color: #856404; }
+        .field-error { color: #dc3545; font-size: 0.82em; margin-top: 4px; display: block; }
+        .input-error { border-color: #dc3545 !important; }
+        .SUBSCRIBED { color: green; font-weight: bold; }
+        .UNSUBSCRIBED { color: gray; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/campaigns">Campaigns</a>
+    <a href="/campaigns/new">New Campaign</a>
+    <a href="/recipients">Recipients</a>
+</nav>
+
+<h1>👥 Recipients</h1>
+
+<!-- Flash Messages -->
+<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+<div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+<div th:if="${warnings}" class="alert alert-warn">
+    <strong>Warnings:</strong>
+    <ul style="margin: 5px 0 0 0; padding-left: 20px;">
+        <li th:each="w : ${warnings}" th:text="${w}"></li>
+    </ul>
+</div>
+
+<div class="flex">
+
+    <!-- Left Column: Add Form + CSV Upload -->
+    <div class="form-box">
+
+        <!-- Add Recipient Form -->
+        <div class="box">
+            <h3 style="margin-top:0">➕ Add Recipient</h3>
+            <form action="/recipients" method="post" th:object="${newRecipient}">
+
+                <label>Name
+                    <input type="text"
+                           th:field="*{name}"
+                           th:classappend="${#fields.hasErrors('name')} ? 'input-error'"
+                           placeholder="John Doe"/>
+                    <span class="field-error"
+                          th:if="${#fields.hasErrors('name')}"
+                          th:errors="*{name}"></span>
+                </label>
+
+                <label>Email
+                    <input type="email"
+                           th:field="*{email}"
+                           th:classappend="${#fields.hasErrors('email')} ? 'input-error'"
+                           placeholder="john@example.com"/>
+                    <span class="field-error"
+                          th:if="${#fields.hasErrors('email')}"
+                          th:errors="*{email}"></span>
+                </label>
+
+                <label>Status
+                    <select th:field="*{subscriptionStatus}">
+                        <option value="SUBSCRIBED">✅ Subscribed</option>
+                        <option value="UNSUBSCRIBED">🚫 Unsubscribed</option>
+                    </select>
+                </label>
+
+                <button class="btn-submit" type="submit">Add Recipient</button>
+            </form>
+        </div>
+
+        <!-- CSV Upload -->
+        <div class="box" style="margin-top: 20px;">
+            <h3 style="margin-top:0">📎 Upload CSV</h3>
+            <form action="/recipients/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".csv"
+                       style="margin-top: 8px; font-size: 0.9em;"/>
+                <button class="btn-submit" type="submit" style="margin-top: 12px; width: 100%;">
+                    Upload
+                </button>
+            </form>
+            <p style="font-size: 0.8em; color: #666; margin-top: 10px; margin-bottom: 0;">
+                Format: <code>name, email, SUBSCRIBED/UNSUBSCRIBED</code>
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Right Column: Recipients Table -->
+    <div class="box" style="flex: 1; overflow-x: auto;">
+        <h3 style="margin-top: 0;">
+            All Recipients
+            <span style="color: #0070f3;">(<span th:text="${#lists.size(recipients)}">0</span>)</span>
+        </h3>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${recipients}">
+                <td th:text="${r.name}"></td>
+                <td th:text="${r.email}"></td>
+                <td>
+                    <span th:classappend="${r.subscriptionStatus}"
+                          th:text="${r.subscriptionStatus}"></span>
+                </td>
+                <td style="white-space: nowrap;">
+                    <a class="btn btn-green"
+                       th:href="@{/recipients/{id}/edit(id=${r.id})}">Edit</a>
+                    <form th:action="@{/recipients/{id}/delete(id=${r.id})}"
+                          method="post"
+                          style="display: inline;"
+                          onsubmit="return confirm('Delete this recipient?')">
+                        <button class="btn btn-red" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(recipients)}">
+                <td colspan="4"
+                    style="text-align: center; color: #999; padding: 20px;">
+                    No recipients yet. Add one or upload a CSV.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

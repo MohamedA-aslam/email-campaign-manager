@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Recipient</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+    nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
+    .form-card { background: white; padding: 30px; border-radius: 8px;
+      max-width: 480px; margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { margin-bottom: 5px; }
+    .subtitle { color: #666; font-size: 0.9em; margin-bottom: 20px; }
+    label { display: block; margin-top: 16px; font-weight: bold; color: #333; }
+    input, select { width: 100%; padding: 9px 10px; margin-top: 5px;
+      border: 1px solid #ddd; border-radius: 5px;
+      box-sizing: border-box; font-size: 0.95em; }
+    input:focus, select:focus { outline: none; border-color: #0070f3;
+      box-shadow: 0 0 0 2px rgba(0,112,243,0.15); }
+    .error { color: #dc3545; font-size: 0.82em; margin-top: 4px; }
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+    .btn { padding: 9px 22px; border: none; border-radius: 5px;
+      cursor: pointer; font-size: 0.95em; font-weight: bold; }
+    .btn-primary { background: #0070f3; color: white; }
+    .btn-primary:hover { background: #005ed4; }
+    .btn-secondary { background: #e9ecef; color: #495057; text-decoration: none;
+      display: inline-flex; align-items: center; }
+    .btn-secondary:hover { background: #dee2e6; }
+    .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px;
+      font-size: 0.8em; font-weight: bold; margin-left: 8px; }
+    .SUBSCRIBED { background: #d4edda; color: #155724; }
+    .UNSUBSCRIBED { background: #e9ecef; color: #495057; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/dashboard">Dashboard</a>
+  <a href="/campaigns">Campaigns</a>
+  <a href="/campaigns/new">New Campaign</a>
+  <a href="/recipients">Recipients</a>
+</nav>
+
+<h1>✏️ Edit Recipient</h1>
+<p class="subtitle">Update recipient details and subscription status.</p>
+
+<div class="form-card">
+  <form th:action="@{/recipients/{id}(id=${recipient.id})}"
+        th:object="${recipient}" method="post">
+
+    <label>Name
+      <input type="text" th:field="*{name}" placeholder="John Doe"/>
+      <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+    </label>
+
+    <label>Email Address
+      <input type="email" th:field="*{email}" placeholder="john@example.com"/>
+      <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+    </label>
+
+    <label>Subscription Status
+      <select th:field="*{subscriptionStatus}">
+        <option value="SUBSCRIBED">✅ Subscribed</option>
+        <option value="UNSUBSCRIBED">🚫 Unsubscribed</option>
+      </select>
+      <span class="error"
+            th:if="${#fields.hasErrors('subscriptionStatus')}"
+            th:errors="*{subscriptionStatus}"></span>
+    </label>
+
+    <div class="btn-row">
+      <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+      <a href="/recipients" class="btn btn-secondary">✕ Cancel</a>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Campaigns</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 15px; }
+        th { background: #0070f3; color: white; padding: 12px; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+        .btn { padding: 5px 12px; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85em; border: none; cursor: pointer; }
+        .btn-blue { background: #0070f3; } .btn-green { background: #28a745; } .btn-red { background: #dc3545; }
+        .alert { padding: 10px 15px; border-radius: 5px; margin-bottom: 15px; background: #d4edda; color: #155724; }
+        .status { padding: 3px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
+        .DRAFT { background: #eee; } .SCHEDULED { background: #fff3cd; }
+        .IN_PROGRESS { background: #cce5ff; } .COMPLETED { background: #d4edda; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/campaigns">Campaigns</a>
+    <a href="/campaigns/new">New Campaign</a>
+    <a href="/recipients">Recipients</a>
+</nav>
+<h1>📧 Campaigns</h1>
+<div th:if="${success}" class="alert" th:text="${success}"></div>
+
+<table>
+    <thead>
+    <tr><th>Name</th><th>Subject</th><th>Status</th><th>Scheduled</th><th>Sent</th><th>Failed</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="c : ${campaigns}">
+        <td th:text="${c.name}"></td>
+        <td th:text="${c.subject}"></td>
+        <td><span class="status" th:classappend="${c.status}" th:text="${c.status}"></span></td>
+        <td th:text="${c.scheduledTime != null ? #temporals.format(c.scheduledTime, 'yyyy-MM-dd HH:mm') : '—'}"></td>
+        <td th:text="${c.sentCount}"></td>
+        <td th:text="${c.failedCount}"></td>
+        <td>
+            <a class="btn btn-blue" th:href="@{/campaigns/{id}/detail(id=${c.id})}">View</a>
+            <a class="btn btn-green" th:href="@{/campaigns/{id}/edit(id=${c.id})}">Edit</a>
+            <form th:action="@{/campaigns/{id}/delete(id=${c.id})}" method="post" style="display:inline">
+                <button class="btn btn-red" type="submit" onclick="return confirm('Delete?')">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

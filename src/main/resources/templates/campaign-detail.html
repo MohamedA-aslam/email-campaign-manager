@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Campaign Detail</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
+        .info-box { background: white; padding: 20px; border-radius: 8px; max-width: 700px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .stats { display: flex; gap: 15px; margin: 15px 0; }
+        .stat { background: #f0f7ff; padding: 15px; border-radius: 8px; text-align: center; flex: 1; }
+        .stat h3 { margin: 0; font-size: 1.8em; color: #0070f3; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        th { background: #0070f3; color: white; padding: 10px; }
+        td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+        .SENT { color: green; font-weight: bold; } .FAILED { color: red; font-weight: bold; }
+        .btn { padding: 8px 18px; color: white; background: #28a745; border: none; border-radius: 5px; cursor: pointer; font-size: 0.95em; }
+        .alert { padding: 10px; border-radius: 5px; background: #d4edda; color: #155724; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/campaigns">Campaigns</a>
+    <a href="/campaigns/new">New Campaign</a>
+    <a href="/recipients">Recipients</a>
+</nav>
+<div class="info-box">
+    <div th:if="${success}" class="alert" th:text="${success}"></div>
+    <h1 th:text="${campaign.name}">Campaign Name</h1>
+    <p><strong>Subject:</strong> <span th:text="${campaign.subject}"></span></p>
+    <p><strong>Status:</strong> <span th:text="${campaign.status}"></span></p>
+    <p><strong>Scheduled:</strong>
+        <span th:text="${campaign.scheduledTime != null ? #temporals.format(campaign.scheduledTime, 'yyyy-MM-dd HH:mm') : 'Not scheduled'}"></span>
+    </p>
+    <div class="stats">
+        <div class="stat"><h3 th:text="${campaign.totalRecipients}">0</h3><p>Total</p></div>
+        <div class="stat"><h3 th:text="${campaign.sentCount}">0</h3><p>Sent</p></div>
+        <div class="stat"><h3 th:text="${campaign.failedCount}">0</h3><p>Failed</p></div>
+    </div>
+    <form th:action="@{/campaigns/{id}/send(id=${campaign.id})}" method="post">
+        <button class="btn" type="submit" onclick="return confirm('Send campaign now?')">▶ Send Now</button>
+    </form>
+</div>
+
+<h2>Delivery Logs</h2>
+<table>
+    <thead>
+    <tr><th>Recipient</th><th>Email</th><th>Status</th><th>Sent At</th><th>Failure Reason</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="log : ${logs}">
+        <td th:text="${log.recipientName}"></td>
+        <td th:text="${log.recipientEmail}"></td>
+        <td><span th:classappend="${log.status}" th:text="${log.status}"></span></td>
+        <td th:text="${#temporals.format(log.sentAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:text="${log.failureReason ?: '—'}"></td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(logs)}">
+        <td colspan="5" style="text-align:center;color:#999">No delivery logs yet.</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

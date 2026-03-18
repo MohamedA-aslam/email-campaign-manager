@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Campaign Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
+        .form-box { background: white; padding: 30px; border-radius: 8px; max-width: 600px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 150px; }
+        .btn { margin-top: 20px; padding: 10px 25px; background: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        .error { color: red; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/campaigns">Campaigns</a>
+    <a href="/campaigns/new">New Campaign</a>
+    <a href="/recipients">Recipients</a>
+</nav>
+<h1>📝 Campaign Form</h1>
+<div class="form-box">
+    <form th:action="${campaign.id != null ? '/campaigns/' + campaign.id : '/campaigns'}"
+          th:object="${campaign}" method="post">
+        <label>Campaign Name
+            <input type="text" th:field="*{name}" placeholder="e.g. Summer Sale 2025"/>
+            <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+        </label>
+        <label>Subject Line
+            <input type="text" th:field="*{subject}" placeholder="e.g. 🔥 50% Off This Weekend Only!"/>
+            <span class="error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></span>
+        </label>
+        <label>Email Content
+            <textarea th:field="*{content}" placeholder="Write your email body here..."></textarea>
+            <span class="error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></span>
+        </label>
+        <label>Scheduled Time (optional)
+            <input type="datetime-local" th:field="*{scheduledTime}"/>
+        </label>
+        <button class="btn" type="submit">Save Campaign</button>
+    </form>
+</div>
+</body>
+</html>

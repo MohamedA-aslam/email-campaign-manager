@@ -1,0 +1,11 @@
+name,email,subscription_status
+Alice Johnson,alice.johnson@example.com,SUBSCRIBED
+Bob Smith,bob.smith@example.com,SUBSCRIBED
+Carol White,carol.white@example.com,SUBSCRIBED
+David Brown,david.brown@example.com,UNSUBSCRIBED
+Eva Martinez,eva.martinez@example.com,SUBSCRIBED
+Frank Lee,frank.lee@example.com,SUBSCRIBED
+Grace Kim,grace.kim@example.com,SUBSCRIBED
+Henry Wilson,henry.wilson@example.com,UNSUBSCRIBED
+Isabel Chen,isabel.chen@example.com,SUBSCRIBED
+James Taylor,james.taylor@example.com,SUBSCRIBED
