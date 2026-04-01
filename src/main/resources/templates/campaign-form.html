@@ -9,7 +9,13 @@
         input, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
         textarea { height: 150px; }
         .btn { margin-top: 20px; padding: 10px 25px; background: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        .btn:disabled { background: #aaa; cursor: not-allowed; }
+        .btn-ai { margin-top: 8px; padding: 7px 16px; background: #7c3aed; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; }
+        .btn-ai:disabled { background: #aaa; cursor: not-allowed; }
         .error { color: red; font-size: 0.85em; }
+        .ai-message { font-size: 0.85em; margin-top: 5px; }
+        .ai-message.warn { color: #b45309; }
+        .ai-message.err  { color: red; }
     </style>
 </head>
 <body>
@@ -28,11 +34,13 @@
             <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
         </label>
         <label>Subject Line
-            <input type="text" th:field="*{subject}" placeholder="e.g. 🔥 50% Off This Weekend Only!"/>
+            <input type="text" id="subjectInput" th:field="*{subject}" placeholder="e.g. 🔥 50% Off This Weekend Only!"/>
             <span class="error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></span>
+            <button type="button" class="btn-ai" id="aiBtn" onclick="generateContent()">✨ Generate with AI</button>
+            <span id="aiMessage" class="ai-message"></span>
         </label>
         <label>Email Content
-            <textarea th:field="*{content}" placeholder="Write your email body here..."></textarea>
+            <textarea id="contentArea" th:field="*{content}" placeholder="Write your email body here..."></textarea>
             <span class="error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></span>
         </label>
         <label>Scheduled Time (optional)
@@ -41,5 +49,51 @@
         <button class="btn" type="submit">Save Campaign</button>
     </form>
 </div>
+
+<script>
+    function generateContent() {
+        const subjectInput = document.getElementById('subjectInput');
+        const contentArea = document.getElementById('contentArea');
+        const aiBtn = document.getElementById('aiBtn');
+        const aiMessage = document.getElementById('aiMessage');
+
+        const subject = subjectInput.value.trim();
+
+        aiMessage.textContent = '';
+        aiMessage.className = 'ai-message';
+
+        if (!subject) {
+            aiMessage.textContent = 'Please enter a subject line first.';
+            aiMessage.classList.add('warn');
+            return;
+        }
+
+        aiBtn.disabled = true;
+        aiBtn.textContent = 'Generating...';
+
+        fetch('/campaigns/generate-content', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subject: subject })
+        })
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+            if (ok) {
+                contentArea.value = data.content;
+            } else {
+                aiMessage.textContent = data.content || 'Failed to generate content.';
+                aiMessage.classList.add('err');
+            }
+        })
+        .catch(() => {
+            aiMessage.textContent = 'Network error. Please try again.';
+            aiMessage.classList.add('err');
+        })
+        .finally(() => {
+            aiBtn.disabled = false;
+            aiBtn.textContent = '✨ Generate with AI';
+        });
+    }
+</script>
 </body>
 </html>

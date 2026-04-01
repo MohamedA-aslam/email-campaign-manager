@@ -1,7 +1,10 @@
 package com.campaign.controller;
 
+import com.campaign.dto.CampaignAnalysisReport;
 import com.campaign.model.Campaign;
+import com.campaign.service.AnthropicService;
 import com.campaign.service.CampaignService;
+import com.campaign.service.CampaignService.ExecutionResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CampaignController {
 
     private final CampaignService campaignService;
+    private final AnthropicService anthropicService;
 
     @GetMapping
     public String listCampaigns(Model model) {
@@ -75,8 +79,27 @@ public class CampaignController {
     @PostMapping("/{id}/send")
     public String sendNow(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         Campaign campaign = campaignService.findById(id);
-        campaignService.executeCampaign(campaign);
-        redirectAttributes.addFlashAttribute("success", "Campaign sent!");
+        ExecutionResult result = campaignService.executeCampaign(campaign);
+
+        double deliveryRate = result.total() > 0
+                ? Math.round(result.sent() * 1000.0 / result.total()) / 10.0 : 0.0;
+        double failureRate = result.total() > 0
+                ? Math.round(result.failed() * 1000.0 / result.total()) / 10.0 : 0.0;
+
+        AnthropicService.InsightsResult insights = anthropicService.generateCampaignInsights(
+                campaign.getName(), campaign.getSubject(),
+                result.total(), result.sent(), result.failed(),
+                result.failureReasons()
+        );
+
+        redirectAttributes.addFlashAttribute("analysis", new CampaignAnalysisReport(
+                result.total(), result.sent(), result.failed(),
+                deliveryRate, failureRate,
+                insights.segmentInsights(),
+                insights.failureBreakdown(),
+                insights.suggestions()
+        ));
+
         return "redirect:/campaigns/" + id + "/detail";
     }
 }

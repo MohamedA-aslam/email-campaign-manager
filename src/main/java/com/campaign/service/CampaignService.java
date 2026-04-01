@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -25,6 +26,9 @@ public class CampaignService {
     private final DeliveryLogRepository deliveryLogRepository;
     private final RecipientService recipientService;
     private final EmailService emailService;
+
+    // Returned by executeCampaign() so callers can build an analysis report
+    public record ExecutionResult(long total, long sent, long failed, List<String> failureReasons) {}
 
     public List<Campaign> findAll() {
         return campaignRepository.findAll();
@@ -59,12 +63,15 @@ public class CampaignService {
     }
 
     @Transactional
-    public void executeCampaign(Campaign campaign) {
+    public ExecutionResult executeCampaign(Campaign campaign) {
         log.info("Executing campaign: {}", campaign.getName());
         campaign.setStatus(CampaignStatus.IN_PROGRESS);
         campaignRepository.save(campaign);
 
         List<Recipient> recipients = recipientService.findSubscribed();
+        long sentCount = 0;
+        long failedCount = 0;
+        List<String> failureReasons = new ArrayList<>();
 
         for (Recipient recipient : recipients) {
             String failureReason = emailService.sendEmail(
@@ -73,7 +80,7 @@ public class CampaignService {
                     campaign.getContent()
             );
 
-            DeliveryLog log = DeliveryLog.builder()
+            DeliveryLog deliveryLog = DeliveryLog.builder()
                     .campaign(campaign)
                     .recipientEmail(recipient.getEmail())
                     .recipientName(recipient.getName())
@@ -81,12 +88,21 @@ public class CampaignService {
                     .failureReason(failureReason)
                     .build();
 
-            deliveryLogRepository.save(log);
+            deliveryLogRepository.save(deliveryLog);
+
+            if (failureReason == null) {
+                sentCount++;
+            } else {
+                failedCount++;
+                failureReasons.add(failureReason);
+            }
         }
 
         campaign.setStatus(CampaignStatus.COMPLETED);
         campaignRepository.save(campaign);
-        log.info("Campaign completed: {}", campaign.getName());
+        log.info("Campaign completed: {} — sent={}, failed={}", campaign.getName(), sentCount, failedCount);
+
+        return new ExecutionResult(recipients.size(), sentCount, failedCount, failureReasons);
     }
 
     public CampaignDTO toCampaignDTO(Campaign campaign) {
