@@ -1,0 +1,15 @@
+name: Trigger Render Job
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  trigger-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render Job
+        run: |
+          curl -X POST "${{ secrets.RENDER_JOB_HOOK }}"
