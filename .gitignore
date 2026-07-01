@@ -12,7 +12,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
+application-secrets.properties
 # SQLite database (contains real data — don't upload)
 *.db
 *.db-shm
