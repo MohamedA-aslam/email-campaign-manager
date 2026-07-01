@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SMTP Profiles</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
+        .flex { display: flex; gap: 25px; margin-top: 15px; }
+        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .form-box { width: 320px; flex-shrink: 0; }
+        label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
+        input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        input:focus { outline: none; border-color: #0070f3; box-shadow: 0 0 0 2px rgba(0,112,243,0.15); }
+        .btn { padding: 5px 12px; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em; text-decoration: none; display: inline-block; }
+        .btn-submit { margin-top: 15px; width: 100%; padding: 9px; background: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.95em; }
+        .btn-submit:hover { background: #005ed4; }
+        .btn-green { background: #28a745; }
+        .btn-blue { background: #0070f3; }
+        .btn-red { background: #dc3545; }
+        .btn-gray { background: #6c757d; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #0070f3; color: white; padding: 10px; text-align: left; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        tr:hover { background: #f9f9f9; }
+        .alert-success { padding: 10px 15px; border-radius: 5px; margin-bottom: 15px; background: #d4edda; color: #155724; }
+        .alert-error { padding: 10px 15px; border-radius: 5px; margin-bottom: 15px; background: #f8d7da; color: #721c24; }
+        .field-error { color: #dc3545; font-size: 0.82em; margin-top: 3px; display: block; }
+        .badge-active { background: #d4edda; color: #155724; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
+        .badge-inactive { background: #e9ecef; color: #6c757d; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; }
+        .hint { font-size: 0.78em; color: #888; margin-top: 4px; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/campaigns">Campaigns</a>
+    <a href="/campaigns/new">New Campaign</a>
+    <a href="/recipients">Recipients</a>
+    <a href="/profile">⚙️ SMTP Profile</a>
+</nav>
+
+<h1>⚙️ SMTP Profiles</h1>
+<p style="color:#666; margin-top:0;">Configure which email account is used to send campaigns. Only one profile can be active at a time.</p>
+
+<div th:if="${success}" class="alert-success" th:text="${success}"></div>
+<div th:if="${error}" class="alert-error" th:text="${error}"></div>
+
+<div class="flex">
+
+    <!-- Add Profile Form -->
+    <div class="form-box">
+        <div class="box">
+            <h3 style="margin-top:0;">➕ Add SMTP Profile</h3>
+            <form action="/profile" method="post" th:object="${newProfile}">
+
+                <label>Display Name
+                    <input type="text" th:field="*{displayName}" placeholder="e.g. Marketing Account"/>
+                    <span class="field-error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></span>
+                </label>
+
+                <label>Gmail Address
+                    <input type="email" th:field="*{email}" placeholder="yourname@gmail.com"/>
+                    <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                </label>
+
+                <label>App Password
+                    <input type="password" th:field="*{appPassword}" placeholder="16-character app password"/>
+                    <span class="field-error" th:if="${#fields.hasErrors('appPassword')}" th:errors="*{appPassword}"></span>
+                    <span class="hint">Generate at: Google Account → Security → App Passwords</span>
+                </label>
+
+                <label>SMTP Host
+                    <input type="text" th:field="*{smtpHost}" placeholder="smtp.gmail.com"/>
+                </label>
+
+                <label>SMTP Port
+                    <input type="number" th:field="*{smtpPort}" placeholder="587"/>
+                </label>
+
+                <button class="btn-submit" type="submit">Add Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profiles Table -->
+    <div class="box" style="flex:1; overflow-x:auto;">
+        <h3 style="margin-top:0;">
+            All Profiles
+            <span style="color:#0070f3;">(<span th:text="${#lists.size(profiles)}">0</span>)</span>
+        </h3>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Display Name</th>
+                <th>Email</th>
+                <th>Host</th>
+                <th>Port</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${profiles}">
+                <td th:text="${p.displayName}"></td>
+                <td th:text="${p.email}"></td>
+                <td th:text="${p.smtpHost}"></td>
+                <td th:text="${p.smtpPort}"></td>
+                <td>
+                    <span th:if="${p.active}" class="badge-active">✅ Active</span>
+                    <span th:unless="${p.active}" class="badge-inactive">Inactive</span>
+                </td>
+                <td style="white-space: nowrap;">
+                    <!-- Activate button — only show if not already active -->
+                    <form th:unless="${p.active}"
+                          th:action="@{/profile/{id}/activate(id=${p.id})}"
+                          method="post" style="display:inline;">
+                        <button class="btn btn-green" type="submit">Activate</button>
+                    </form>
+
+                    <a class="btn btn-blue" th:href="@{/profile/{id}/edit(id=${p.id})}">Edit</a>
+
+                    <form th:action="@{/profile/{id}/delete(id=${p.id})}"
+                          method="post" style="display:inline;"
+                          onsubmit="return confirm('Delete this profile?')">
+                        <button class="btn btn-red" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(profiles)}">
+                <td colspan="6" style="text-align:center; color:#999; padding:20px;">
+                    No SMTP profiles yet. Add one above to get started.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

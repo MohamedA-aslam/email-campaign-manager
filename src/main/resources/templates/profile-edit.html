@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit SMTP Profile</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
+        .form-card { background: white; padding: 30px; border-radius: 8px; max-width: 480px;
+                     margin-top: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 16px; font-weight: bold; color: #333; }
+        input { width: 100%; padding: 9px 10px; margin-top: 5px; border: 1px solid #ddd;
+                border-radius: 5px; box-sizing: border-box; font-size: 0.95em; }
+        input:focus { outline: none; border-color: #0070f3; box-shadow: 0 0 0 2px rgba(0,112,243,0.15); }
+        .field-error { color: #dc3545; font-size: 0.82em; margin-top: 4px; display: block; }
+        .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+        .btn { padding: 9px 22px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.95em; font-weight: bold; }
+        .btn-primary { background: #0070f3; color: white; }
+        .btn-primary:hover { background: #005ed4; }
+        .btn-secondary { background: #e9ecef; color: #495057; text-decoration: none;
+                         display: inline-flex; align-items: center; }
+        .hint { font-size: 0.78em; color: #888; margin-top: 4px; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/campaigns">Campaigns</a>
+    <a href="/campaigns/new">New Campaign</a>
+    <a href="/recipients">Recipients</a>
+    <a href="/profile">⚙️ SMTP Profile</a>
+</nav>
+
+<h1>✏️ Edit SMTP Profile</h1>
+
+<div class="form-card">
+    <form th:action="@{/profile/{id}/edit(id=${profile.id})}"
+          th:object="${profile}" method="post">
+
+        <label>Display Name
+            <input type="text" th:field="*{displayName}" placeholder="e.g. Marketing Account"/>
+            <span class="field-error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></span>
+        </label>
+
+        <label>Gmail Address
+            <input type="email" th:field="*{email}" placeholder="yourname@gmail.com"/>
+            <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        </label>
+
+        <label>App Password
+            <input type="password" th:field="*{appPassword}" placeholder="Leave blank to keep existing"/>
+            <span class="field-error" th:if="${#fields.hasErrors('appPassword')}" th:errors="*{appPassword}"></span>
+            <span class="hint">Generate at: Google Account → Security → App Passwords</span>
+        </label>
+
+        <label>SMTP Host
+            <input type="text" th:field="*{smtpHost}"/>
+        </label>
+
+        <label>SMTP Port
+            <input type="number" th:field="*{smtpPort}"/>
+        </label>
+
+        <div class="btn-row">
+            <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+            <a href="/profile" class="btn btn-secondary">✕ Cancel</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

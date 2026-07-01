@@ -2,160 +2,185 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Recipients</title>
+    <title>BECMS — Recipients</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
-        .flex { display: flex; gap: 25px; margin-top: 15px; }
-        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .form-box { width: 300px; flex-shrink: 0; }
-        label { display: block; margin-top: 12px; font-weight: bold; }
-        input, select { width: 100%; padding: 7px; margin-top: 4px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        input:focus, select:focus { outline: none; border-color: #0070f3; box-shadow: 0 0 0 2px rgba(0,112,243,0.15); }
-        .btn { padding: 5px 12px; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85em; border: none; cursor: pointer; }
-        .btn-submit { margin-top: 15px; padding: 8px 20px; background: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
-        .btn-submit:hover { background: #005ed4; }
-        .btn-green { background: #28a745; }
-        .btn-green:hover { background: #218838; }
-        .btn-red { background: #dc3545; }
-        .btn-red:hover { background: #c82333; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #0070f3; color: white; padding: 10px; text-align: left; }
-        td { padding: 8px 12px; border-bottom: 1px solid #eee; }
-        tr:hover { background: #f9f9f9; }
-        .alert { padding: 10px 15px; border-radius: 5px; margin-bottom: 10px; }
-        .alert-success { background: #d4edda; color: #155724; }
-        .alert-error { background: #f8d7da; color: #721c24; }
-        .alert-warn { background: #fff3cd; color: #856404; }
-        .field-error { color: #dc3545; font-size: 0.82em; margin-top: 4px; display: block; }
-        .input-error { border-color: #dc3545 !important; }
-        .SUBSCRIBED { color: green; font-weight: bold; }
-        .UNSUBSCRIBED { color: gray; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --navy:#0D1117; --surface:#161B22; --surface2:#1C2128; --border:#21262D;
+            --indigo:#6366F1; --indigo2:#818CF8; --coral:#F472B6; --gold:#FBBF24;
+            --green:#34D399; --red:#F87171; --text1:#F0F6FC; --text2:#8B949E; --text3:#484F58;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--navy); color:var(--text1); min-height:100vh; }
+        nav { display:flex; align-items:center; gap:8px; padding:0 32px; height:60px; background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+        .nav-brand { font-weight:800; font-size:1.1rem; background:linear-gradient(135deg,var(--indigo2),var(--coral)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-right:16px; letter-spacing:-0.5px; }
+        nav a { text-decoration:none; color:var(--text2); font-size:0.875rem; font-weight:500; padding:6px 12px; border-radius:6px; transition:all 0.15s; }
+        nav a:hover, nav a.active { color:var(--text1); background:var(--border); }
+        nav a.nav-cta { background:var(--indigo); color:white; margin-left:auto; }
+        main { padding:40px 32px; max-width:1280px; margin:0 auto; }
+        .layout { display:grid; grid-template-columns:300px 1fr; gap:24px; align-items:start; }
+        .page-header { margin-bottom:28px; }
+        .page-header h1 { font-size:1.875rem; font-weight:800; letter-spacing:-0.5px; }
+        .page-header p { color:var(--text2); margin-top:4px; font-size:0.9rem; }
+        .alert { padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:0.875rem; font-weight:500; }
+        .alert-success { background:rgba(52,211,153,0.1);  border:1px solid rgba(52,211,153,0.3);  color:var(--green); }
+        .alert-error   { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:var(--red); }
+        .alert-warn    { background:rgba(251,191,36,0.1);  border:1px solid rgba(251,191,36,0.3);  color:var(--gold); }
+        .card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; }
+        .card + .card { margin-top:16px; }
+        .card-title { font-size:0.875rem; font-weight:700; margin-bottom:16px; color:var(--text1); }
+        .form-group { margin-bottom:14px; }
+        label { display:block; font-size:0.72rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+        input, select {
+            width:100%; padding:9px 12px; background:var(--surface2); border:1px solid var(--border);
+            border-radius:8px; color:var(--text1); font-family:'Inter',sans-serif; font-size:0.875rem;
+            transition:all 0.15s; outline:none;
+        }
+        input:focus, select:focus { border-color:var(--indigo); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+        input::placeholder { color:var(--text3); }
+        select option { background:var(--surface2); }
+        .field-error { color:var(--coral); font-size:0.75rem; margin-top:4px; }
+        .btn-submit { width:100%; padding:10px; background:var(--indigo); color:white; border:none; border-radius:8px; font-size:0.875rem; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; margin-top:16px; transition:all 0.15s; }
+        .btn-submit:hover { background:var(--indigo2); }
+        .file-input-wrapper { position:relative; }
+        input[type="file"] {
+            padding:8px; font-size:0.8rem; color:var(--text2);
+            cursor:pointer;
+        }
+        input[type="file"]::file-selector-button {
+            background:var(--border); color:var(--text1); border:none;
+            padding:4px 10px; border-radius:4px; font-size:0.78rem;
+            cursor:pointer; margin-right:8px; font-family:'Inter',sans-serif;
+        }
+        .hint { font-size:0.72rem; color:var(--text3); margin-top:6px; }
+        .table-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+        .table-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); }
+        .table-header h2 { font-size:1rem; font-weight:700; }
+        .count-badge { background:var(--border); color:var(--text2); padding:2px 8px; border-radius:20px; font-size:0.75rem; font-weight:600; }
+        table { width:100%; border-collapse:collapse; }
+        thead tr { background:var(--surface2); }
+        th { padding:11px 16px; text-align:left; font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text2); border-bottom:1px solid var(--border); }
+        td { padding:12px 16px; font-size:0.875rem; border-bottom:1px solid var(--border); }
+        tbody tr:last-child td { border-bottom:none; }
+        tbody tr:hover { background:var(--surface2); }
+        .sub-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:20px; font-size:0.72rem; font-weight:600; }
+        .sub-badge.SUBSCRIBED   { background:rgba(52,211,153,0.15); color:var(--green); }
+        .sub-badge.UNSUBSCRIBED { background:rgba(139,148,158,0.1);  color:var(--text2); }
+        .btn { display:inline-flex; align-items:center; padding:5px 12px; border-radius:6px; font-size:0.78rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; transition:all 0.15s; font-family:'Inter',sans-serif; }
+        .btn-edit   { background:transparent; border:1px solid var(--border); color:var(--text2); }
+        .btn-edit:hover { border-color:var(--indigo); color:var(--indigo2); }
+        .btn-del    { background:transparent; border:1px solid var(--border); color:var(--text2); }
+        .btn-del:hover  { border-color:var(--coral); color:var(--coral); }
+        .actions { display:flex; gap:6px; }
+        .empty-row td { text-align:center; color:var(--text2); padding:40px; }
     </style>
 </head>
 <body>
 <nav>
+    <span class="nav-brand">✦ BECMS</span>
     <a href="/dashboard">Dashboard</a>
     <a href="/campaigns">Campaigns</a>
-    <a href="/campaigns/new">New Campaign</a>
-    <a href="/recipients">Recipients</a>
+    <a href="/recipients" class="active">Recipients</a>
+    <a href="/profile">SMTP Profile</a>
+    <a href="/campaigns/new" class="nav-cta">+ New Campaign</a>
 </nav>
-
-<h1>👥 Recipients</h1>
-
-<!-- Flash Messages -->
-<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-<div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-<div th:if="${warnings}" class="alert alert-warn">
-    <strong>Warnings:</strong>
-    <ul style="margin: 5px 0 0 0; padding-left: 20px;">
-        <li th:each="w : ${warnings}" th:text="${w}"></li>
-    </ul>
-</div>
-
-<div class="flex">
-
-    <!-- Left Column: Add Form + CSV Upload -->
-    <div class="form-box">
-
-        <!-- Add Recipient Form -->
-        <div class="box">
-            <h3 style="margin-top:0">➕ Add Recipient</h3>
-            <form action="/recipients" method="post" th:object="${newRecipient}">
-
-                <label>Name
-                    <input type="text"
-                           th:field="*{name}"
-                           th:classappend="${#fields.hasErrors('name')} ? 'input-error'"
-                           placeholder="John Doe"/>
-                    <span class="field-error"
-                          th:if="${#fields.hasErrors('name')}"
-                          th:errors="*{name}"></span>
-                </label>
-
-                <label>Email
-                    <input type="email"
-                           th:field="*{email}"
-                           th:classappend="${#fields.hasErrors('email')} ? 'input-error'"
-                           placeholder="john@example.com"/>
-                    <span class="field-error"
-                          th:if="${#fields.hasErrors('email')}"
-                          th:errors="*{email}"></span>
-                </label>
-
-                <label>Status
-                    <select th:field="*{subscriptionStatus}">
-                        <option value="SUBSCRIBED">✅ Subscribed</option>
-                        <option value="UNSUBSCRIBED">🚫 Unsubscribed</option>
-                    </select>
-                </label>
-
-                <button class="btn-submit" type="submit">Add Recipient</button>
-            </form>
-        </div>
-
-        <!-- CSV Upload -->
-        <div class="box" style="margin-top: 20px;">
-            <h3 style="margin-top:0">📎 Upload CSV</h3>
-            <form action="/recipients/upload" method="post" enctype="multipart/form-data">
-                <input type="file" name="file" accept=".csv"
-                       style="margin-top: 8px; font-size: 0.9em;"/>
-                <button class="btn-submit" type="submit" style="margin-top: 12px; width: 100%;">
-                    Upload
-                </button>
-            </form>
-            <p style="font-size: 0.8em; color: #666; margin-top: 10px; margin-bottom: 0;">
-                Format: <code>name, email, SUBSCRIBED/UNSUBSCRIBED</code>
-            </p>
-        </div>
-
+<main>
+    <div class="page-header">
+        <h1>Recipients</h1>
+        <p>Manage your mailing list and subscription status</p>
     </div>
 
-    <!-- Right Column: Recipients Table -->
-    <div class="box" style="flex: 1; overflow-x: auto;">
-        <h3 style="margin-top: 0;">
-            All Recipients
-            <span style="color: #0070f3;">(<span th:text="${#lists.size(recipients)}">0</span>)</span>
-        </h3>
-
-        <table>
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="r : ${recipients}">
-                <td th:text="${r.name}"></td>
-                <td th:text="${r.email}"></td>
-                <td>
-                    <span th:classappend="${r.subscriptionStatus}"
-                          th:text="${r.subscriptionStatus}"></span>
-                </td>
-                <td style="white-space: nowrap;">
-                    <a class="btn btn-green"
-                       th:href="@{/recipients/{id}/edit(id=${r.id})}">Edit</a>
-                    <form th:action="@{/recipients/{id}/delete(id=${r.id})}"
-                          method="post"
-                          style="display: inline;"
-                          onsubmit="return confirm('Delete this recipient?')">
-                        <button class="btn btn-red" type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(recipients)}">
-                <td colspan="4"
-                    style="text-align: center; color: #999; padding: 20px;">
-                    No recipients yet. Add one or upload a CSV.
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+    <div th:if="${warnings}" class="alert alert-warn">
+        <strong>Warnings:</strong>
+        <ul style="margin-top:6px; padding-left:18px;">
+            <li th:each="w : ${warnings}" th:text="${w}"></li>
+        </ul>
     </div>
 
-</div>
+    <div class="layout">
+        <!-- Left: Forms -->
+        <div>
+            <div class="card">
+                <div class="card-title">➕ Add Recipient</div>
+                <form action="/recipients" method="post" th:object="${newRecipient}">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" th:field="*{name}" placeholder="Jane Smith"
+                               th:classappend="${#fields.hasErrors('name')} ? 'input-error'"/>
+                        <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" th:field="*{email}" placeholder="jane@example.com"
+                               th:classappend="${#fields.hasErrors('email')} ? 'input-error'"/>
+                        <div class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select th:field="*{subscriptionStatus}">
+                            <option value="SUBSCRIBED">✅ Subscribed</option>
+                            <option value="UNSUBSCRIBED">🚫 Unsubscribed</option>
+                        </select>
+                    </div>
+                    <button class="btn-submit" type="submit">Add Recipient</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📎 Bulk Upload CSV</div>
+                <form action="/recipients/upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>CSV File</label>
+                        <input type="file" name="file" accept=".csv"/>
+                    </div>
+                    <p class="hint">Format: name, email, SUBSCRIBED/UNSUBSCRIBED</p>
+                    <button class="btn-submit" type="submit" style="margin-top:12px;">Upload CSV</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h2>All Recipients</h2>
+                <span class="count-badge" th:text="${#lists.size(recipients)} + ' total'">0 total</span>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${recipients}">
+                    <td style="font-weight:500;" th:text="${r.name}"></td>
+                    <td style="color:var(--text2);" th:text="${r.email}"></td>
+                    <td>
+                        <span th:classappend="${r.subscriptionStatus}" class="sub-badge" th:text="${r.subscriptionStatus}"></span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a class="btn btn-edit" th:href="@{/recipients/{id}/edit(id=${r.id})}">Edit</a>
+                            <form th:action="@{/recipients/{id}/delete(id=${r.id})}" method="post" style="display:inline"
+                                  onsubmit="return confirm('Delete this recipient?')">
+                                <button class="btn btn-del" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="empty-row" th:if="${#lists.isEmpty(recipients)}">
+                    <td colspan="4">No recipients yet. Add one above or upload a CSV.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
 </body>
 </html>

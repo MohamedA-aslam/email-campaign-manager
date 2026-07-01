@@ -1,98 +1,156 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Campaign Form</title>
+<head>
+    <meta charset="UTF-8">
+    <title>BECMS — Campaign Form</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
-        .form-box { background: white; padding: 30px; border-radius: 8px; max-width: 600px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        label { display: block; margin-top: 15px; font-weight: bold; }
-        input, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        textarea { height: 150px; }
-        .btn { margin-top: 20px; padding: 10px 25px; background: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
-        .btn:disabled { background: #aaa; cursor: not-allowed; }
-        .btn-ai { margin-top: 8px; padding: 7px 16px; background: #7c3aed; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; }
-        .btn-ai:disabled { background: #aaa; cursor: not-allowed; }
-        .error { color: red; font-size: 0.85em; }
-        .ai-message { font-size: 0.85em; margin-top: 5px; }
-        .ai-message.warn { color: #b45309; }
-        .ai-message.err  { color: red; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --navy:#0D1117; --surface:#161B22; --surface2:#1C2128; --border:#21262D;
+            --indigo:#6366F1; --indigo2:#818CF8; --coral:#F472B6; --gold:#FBBF24;
+            --green:#34D399; --red:#F87171; --text1:#F0F6FC; --text2:#8B949E; --text3:#484F58;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--navy); color:var(--text1); min-height:100vh; }
+        nav { display:flex; align-items:center; gap:8px; padding:0 32px; height:60px; background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+        .nav-brand { font-weight:800; font-size:1.1rem; background:linear-gradient(135deg,var(--indigo2),var(--coral)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-right:16px; letter-spacing:-0.5px; }
+        nav a { text-decoration:none; color:var(--text2); font-size:0.875rem; font-weight:500; padding:6px 12px; border-radius:6px; transition:all 0.15s; }
+        nav a:hover { color:var(--text1); background:var(--border); }
+        nav a.nav-cta { background:var(--indigo); color:white; margin-left:auto; }
+        nav a.nav-cta:hover { background:var(--indigo2); }
+        main { padding:40px 32px; max-width:760px; margin:0 auto; }
+        .page-header { margin-bottom:32px; }
+        .page-header h1 { font-size:1.875rem; font-weight:800; letter-spacing:-0.5px; }
+        .page-header p { color:var(--text2); margin-top:4px; font-size:0.9rem; }
+        .form-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; }
+        .form-group { margin-bottom:20px; }
+        label { display:block; font-size:0.8rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
+        input, textarea, select {
+            width:100%; padding:10px 14px; background:var(--surface2); border:1px solid var(--border);
+            border-radius:8px; color:var(--text1); font-family:'Inter',sans-serif; font-size:0.9rem;
+            transition:all 0.15s; outline:none;
+        }
+        input:focus, textarea:focus, select:focus { border-color:var(--indigo); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+        input::placeholder, textarea::placeholder { color:var(--text3); }
+        textarea { height:180px; resize:vertical; }
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter:invert(0.5); }
+        .field-error { color:var(--coral); font-size:0.78rem; margin-top:6px; }
+        .subject-row { display:flex; gap:10px; align-items:flex-start; }
+        .subject-row input { flex:1; }
+        .btn-generate {
+            display:inline-flex; align-items:center; gap:6px; padding:10px 16px;
+            background:linear-gradient(135deg, #7C3AED, var(--indigo));
+            color:white; border:none; border-radius:8px; font-size:0.85rem;
+            font-weight:600; cursor:pointer; white-space:nowrap; font-family:'Inter',sans-serif;
+            transition:all 0.15s; margin-top:0;
+        }
+        .btn-generate:hover { opacity:0.9; transform:translateY(-1px); }
+        .btn-generate:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+        .form-actions { display:flex; gap:10px; margin-top:28px; }
+        .btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; border-radius:8px; font-size:0.875rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; transition:all 0.15s; font-family:'Inter',sans-serif; }
+        .btn-primary { background:var(--indigo); color:white; }
+        .btn-primary:hover { background:var(--indigo2); }
+        .btn-ghost { background:transparent; border:1px solid var(--border); color:var(--text2); }
+        .btn-ghost:hover { border-color:var(--text2); color:var(--text1); }
+        .ai-hint { font-size:0.75rem; color:var(--text3); margin-top:6px; }
+        .generating-msg { font-size:0.8rem; color:var(--indigo2); margin-top:8px; display:none; }
     </style>
 </head>
 <body>
 <nav>
+    <span class="nav-brand">✦ BECMS</span>
     <a href="/dashboard">Dashboard</a>
     <a href="/campaigns">Campaigns</a>
-    <a href="/campaigns/new">New Campaign</a>
     <a href="/recipients">Recipients</a>
+    <a href="/profile">SMTP Profile</a>
+    <a href="/campaigns/new" class="nav-cta">+ New Campaign</a>
 </nav>
-<h1>📝 Campaign Form</h1>
-<div class="form-box">
-    <form th:action="${campaign.id != null ? '/campaigns/' + campaign.id : '/campaigns'}"
-          th:object="${campaign}" method="post">
-        <label>Campaign Name
-            <input type="text" th:field="*{name}" placeholder="e.g. Summer Sale 2025"/>
-            <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-        </label>
-        <label>Subject Line
-            <input type="text" id="subjectInput" th:field="*{subject}" placeholder="e.g. 🔥 50% Off This Weekend Only!"/>
-            <span class="error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></span>
-            <button type="button" class="btn-ai" id="aiBtn" onclick="generateContent()">✨ Generate with AI</button>
-            <span id="aiMessage" class="ai-message"></span>
-        </label>
-        <label>Email Content
-            <textarea id="contentArea" th:field="*{content}" placeholder="Write your email body here..."></textarea>
-            <span class="error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></span>
-        </label>
-        <label>Scheduled Time (optional)
-            <input type="datetime-local" th:field="*{scheduledTime}"/>
-        </label>
-        <button class="btn" type="submit">Save Campaign</button>
-    </form>
-</div>
+<main>
+    <div class="page-header">
+        <h1 th:text="${campaign.id != null} ? 'Edit Campaign' : 'New Campaign'">New Campaign</h1>
+        <p>Fill in the details below to create your email campaign</p>
+    </div>
+
+    <div class="form-card">
+        <form th:action="${campaign.id != null ? '/campaigns/' + campaign.id : '/campaigns'}"
+              th:object="${campaign}" method="post">
+
+            <div class="form-group">
+                <label>Campaign Name</label>
+                <input type="text" th:field="*{name}" placeholder="e.g. Summer Sale 2026"/>
+                <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Subject Line</label>
+                <div class="subject-row">
+                    <input type="text" th:field="*{subject}" id="subjectInput" placeholder="e.g. 🔥 50% Off This Weekend Only!"/>
+                    <button type="button" class="btn-generate" id="generateBtn" onclick="generateContent()">
+                        ✨ Generate
+                    </button>
+                </div>
+                <div class="ai-hint">Click Generate to auto-write email content from your subject line using AI</div>
+                <div class="field-error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></div>
+                <div class="generating-msg" id="generatingMsg">⏳ Writing your email content...</div>
+            </div>
+
+            <div class="form-group">
+                <label>Email Content</label>
+                <textarea th:field="*{content}" id="contentArea" placeholder="Write your email body here, or use Generate above..."></textarea>
+                <div class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Scheduled Time <span style="color:var(--text3); font-weight:400; text-transform:none; letter-spacing:0;">(optional)</span></label>
+                <input type="datetime-local" th:field="*{scheduledTime}"/>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Save Campaign</button>
+                <a href="/campaigns" class="btn btn-ghost">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
 
 <script>
-    function generateContent() {
-        const subjectInput = document.getElementById('subjectInput');
-        const contentArea = document.getElementById('contentArea');
-        const aiBtn = document.getElementById('aiBtn');
-        const aiMessage = document.getElementById('aiMessage');
-
-        const subject = subjectInput.value.trim();
-
-        aiMessage.textContent = '';
-        aiMessage.className = 'ai-message';
+    async function generateContent() {
+        const subject = document.getElementById('subjectInput').value.trim();
+        const btn = document.getElementById('generateBtn');
+        const msg = document.getElementById('generatingMsg');
+        const area = document.getElementById('contentArea');
 
         if (!subject) {
-            aiMessage.textContent = 'Please enter a subject line first.';
-            aiMessage.classList.add('warn');
+            alert('Please enter a subject line first.');
             return;
         }
 
-        aiBtn.disabled = true;
-        aiBtn.textContent = 'Generating...';
+        btn.disabled = true;
+        btn.textContent = '⏳ Generating...';
+        msg.style.display = 'block';
 
-        fetch('/campaigns/generate-content', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ subject: subject })
-        })
-        .then(res => res.json().then(data => ({ ok: res.ok, data })))
-        .then(({ ok, data }) => {
-            if (ok) {
-                contentArea.value = data.content;
+        try {
+            const res = await fetch('/campaigns/generate-content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subject })
+            });
+            const data = await res.json();
+            if (data.content) {
+                area.value = data.content;
+                area.style.borderColor = 'var(--green)';
+                setTimeout(() => area.style.borderColor = '', 2000);
             } else {
-                aiMessage.textContent = data.content || 'Failed to generate content.';
-                aiMessage.classList.add('err');
+                alert('Could not generate content. Please try again.');
             }
-        })
-        .catch(() => {
-            aiMessage.textContent = 'Network error. Please try again.';
-            aiMessage.classList.add('err');
-        })
-        .finally(() => {
-            aiBtn.disabled = false;
-            aiBtn.textContent = '✨ Generate with AI';
-        });
+        } catch (e) {
+            alert('Generation failed. Check your connection.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '✨ Generate';
+            msg.style.display = 'none';
+        }
     }
 </script>
 </body>

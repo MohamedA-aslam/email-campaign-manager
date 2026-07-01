@@ -1,51 +1,127 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Campaigns</title>
+<head>
+    <meta charset="UTF-8">
+    <title>BECMS — Campaigns</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 15px; }
-        th { background: #0070f3; color: white; padding: 12px; }
-        td { padding: 10px 12px; border-bottom: 1px solid #eee; }
-        .btn { padding: 5px 12px; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85em; border: none; cursor: pointer; }
-        .btn-blue { background: #0070f3; } .btn-green { background: #28a745; } .btn-red { background: #dc3545; }
-        .alert { padding: 10px 15px; border-radius: 5px; margin-bottom: 15px; background: #d4edda; color: #155724; }
-        .status { padding: 3px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
-        .DRAFT { background: #eee; } .SCHEDULED { background: #fff3cd; }
-        .IN_PROGRESS { background: #cce5ff; } .COMPLETED { background: #d4edda; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --navy:#0D1117; --surface:#161B22; --surface2:#1C2128; --border:#21262D;
+            --indigo:#6366F1; --indigo2:#818CF8; --coral:#F472B6; --gold:#FBBF24;
+            --green:#34D399; --red:#F87171; --text1:#F0F6FC; --text2:#8B949E; --text3:#484F58;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family:'Inter',sans-serif; background:var(--navy); color:var(--text1); min-height:100vh; }
+        nav { display:flex; align-items:center; gap:8px; padding:0 32px; height:60px; background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+        .nav-brand { font-weight:800; font-size:1.1rem; background:linear-gradient(135deg,var(--indigo2),var(--coral)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-right:16px; letter-spacing:-0.5px; }
+        nav a { text-decoration:none; color:var(--text2); font-size:0.875rem; font-weight:500; padding:6px 12px; border-radius:6px; transition:all 0.15s; }
+        nav a:hover, nav a.active { color:var(--text1); background:var(--border); }
+        nav a.nav-cta { background:var(--indigo); color:white; margin-left:auto; }
+        nav a.nav-cta:hover { background:var(--indigo2); }
+        main { padding:40px 32px; max-width:1280px; margin:0 auto; }
+        .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; }
+        .page-header h1 { font-size:1.875rem; font-weight:800; letter-spacing:-0.5px; }
+        .page-header p { color:var(--text2); margin-top:4px; font-size:0.9rem; }
+        .alert { padding:12px 16px; border-radius:8px; margin-bottom:20px; font-size:0.875rem; font-weight:500; }
+        .alert-success { background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.3); color:var(--green); }
+        .alert-error   { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:var(--red); }
+        .table-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+        table { width:100%; border-collapse:collapse; }
+        thead tr { background:var(--surface2); border-bottom:1px solid var(--border); }
+        th { padding:12px 16px; text-align:left; font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text2); }
+        td { padding:14px 16px; font-size:0.875rem; border-bottom:1px solid var(--border); color:var(--text1); }
+        tbody tr:last-child td { border-bottom:none; }
+        tbody tr:hover { background:var(--surface2); }
+        .badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; }
+        .badge::before { content:''; width:6px; height:6px; border-radius:50%; }
+        .badge-draft     { background:rgba(139,148,158,0.15); color:var(--text2); }
+        .badge-draft::before { background:var(--text2); }
+        .badge-scheduled { background:rgba(251,191,36,0.15); color:var(--gold); }
+        .badge-scheduled::before { background:var(--gold); }
+        .badge-progress  { background:rgba(99,102,241,0.15); color:var(--indigo2); }
+        .badge-progress::before { background:var(--indigo2); }
+        .badge-completed { background:rgba(52,211,153,0.15); color:var(--green); }
+        .badge-completed::before { background:var(--green); }
+        .btn { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:6px; font-size:0.8rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; transition:all 0.15s; font-family:'Inter',sans-serif; }
+        .btn-primary { background:var(--indigo); color:white; }
+        .btn-primary:hover { background:var(--indigo2); }
+        .btn-ghost { background:transparent; border:1px solid var(--border); color:var(--text2); }
+        .btn-ghost:hover { border-color:var(--indigo); color:var(--indigo2); }
+        .btn-danger { background:transparent; border:1px solid var(--border); color:var(--text2); }
+        .btn-danger:hover { border-color:var(--coral); color:var(--coral); }
+        .actions { display:flex; gap:6px; align-items:center; }
+        .empty-row td { text-align:center; color:var(--text2); padding:40px; font-size:0.9rem; }
+        .sent-count { color:var(--green); font-weight:600; }
+        .fail-count { color:var(--coral); font-weight:600; }
     </style>
 </head>
 <body>
 <nav>
+    <span class="nav-brand">✦ BECMS</span>
     <a href="/dashboard">Dashboard</a>
-    <a href="/campaigns">Campaigns</a>
-    <a href="/campaigns/new">New Campaign</a>
+    <a href="/campaigns" class="active">Campaigns</a>
     <a href="/recipients">Recipients</a>
+    <a href="/profile">SMTP Profile</a>
+    <a href="/campaigns/new" class="nav-cta">+ New Campaign</a>
 </nav>
-<h1>📧 Campaigns</h1>
-<div th:if="${success}" class="alert" th:text="${success}"></div>
+<main>
+    <div class="page-header">
+        <div>
+            <h1>Campaigns</h1>
+            <p>Manage and monitor your email campaigns</p>
+        </div>
+        <a href="/campaigns/new" class="btn btn-primary">+ New Campaign</a>
+    </div>
 
-<table>
-    <thead>
-    <tr><th>Name</th><th>Subject</th><th>Status</th><th>Scheduled</th><th>Sent</th><th>Failed</th><th>Actions</th></tr>
-    </thead>
-    <tbody>
-    <tr th:each="c : ${campaigns}">
-        <td th:text="${c.name}"></td>
-        <td th:text="${c.subject}"></td>
-        <td><span class="status" th:classappend="${c.status}" th:text="${c.status}"></span></td>
-        <td th:text="${c.scheduledTime != null ? #temporals.format(c.scheduledTime, 'yyyy-MM-dd HH:mm') : '—'}"></td>
-        <td th:text="${c.sentCount}"></td>
-        <td th:text="${c.failedCount}"></td>
-        <td>
-            <a class="btn btn-blue" th:href="@{/campaigns/{id}/detail(id=${c.id})}">View</a>
-            <a class="btn btn-green" th:href="@{/campaigns/{id}/edit(id=${c.id})}">Edit</a>
-            <form th:action="@{/campaigns/{id}/delete(id=${c.id})}" method="post" style="display:inline">
-                <button class="btn btn-red" type="submit" onclick="return confirm('Delete?')">Delete</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Scheduled</th>
+                <th>Sent</th>
+                <th>Failed</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${campaigns}">
+                <td style="font-weight:600;" th:text="${c.name}"></td>
+                <td style="color:var(--text2); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" th:text="${c.subject}"></td>
+                <td>
+                    <span th:switch="${c.status.toString()}">
+                        <span th:case="'DRAFT'"       class="badge badge-draft">Draft</span>
+                        <span th:case="'SCHEDULED'"   class="badge badge-scheduled">Scheduled</span>
+                        <span th:case="'IN_PROGRESS'" class="badge badge-progress">In Progress</span>
+                        <span th:case="'COMPLETED'"   class="badge badge-completed">Completed</span>
+                    </span>
+                </td>
+                <td style="color:var(--text2);" th:text="${c.scheduledTime != null ? #temporals.format(c.scheduledTime,'dd MMM, HH:mm') : '—'}"></td>
+                <td class="sent-count" th:text="${c.sentCount}"></td>
+                <td class="fail-count" th:text="${c.failedCount}"></td>
+                <td>
+                    <div class="actions">
+                        <a class="btn btn-ghost" th:href="@{/campaigns/{id}/detail(id=${c.id})}">View</a>
+                        <a class="btn btn-ghost" th:href="@{/campaigns/{id}/edit(id=${c.id})}">Edit</a>
+                        <form th:action="@{/campaigns/{id}/delete(id=${c.id})}" method="post" style="display:inline" onsubmit="return confirm('Delete this campaign?')">
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr class="empty-row" th:if="${#lists.isEmpty(campaigns)}">
+                <td colspan="7">No campaigns yet. <a href="/campaigns/new" style="color:var(--indigo2);">Create your first one →</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
 </body>
 </html>
