@@ -1,9 +1,11 @@
 package com.campaign.service;
 
+import com.campaign.dto.GenerateContentResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -27,6 +29,10 @@ public class AnthropicService {
     // Low-level: single call to Claude API, returns content[0].text
     // -------------------------------------------------------------------------
     private String callClaude(String userMessage) throws Exception {
+        if (apiKey == null || apiKey.isBlank()) {
+            return String.valueOf(ResponseEntity.status(503)
+                    .body(new GenerateContentResponse("AI generation not configured on this server.")));
+        }
         String body = objectMapper.writeValueAsString(Map.of(
                 "model", "claude-sonnet-4-20250514",
                 "max_tokens", 1024,
