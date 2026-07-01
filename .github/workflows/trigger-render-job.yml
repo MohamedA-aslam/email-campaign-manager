@@ -1,9 +1,7 @@
 name: Trigger Render Job
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   trigger-job:
