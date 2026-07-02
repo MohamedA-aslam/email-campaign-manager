@@ -1,13 +1,18 @@
+# Stage 1 — Build
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
+# Stage 2 — Run
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
-COPY entrypoint.sh entrypoint.sh
-RUN chmod +x entrypoint.sh
+
+# Create the data directory for SQLite
+RUN mkdir -p /opt/render/project/data && \
+    chmod 777 /opt/render/project/data
+
 EXPOSE 8080
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
