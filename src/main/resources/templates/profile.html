@@ -2,143 +2,366 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>SMTP Profiles</title>
+    <title>BECMS — Email Profiles</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        nav a { margin-right: 15px; text-decoration: none; color: #0070f3; font-weight: bold; }
-        .flex { display: flex; gap: 25px; margin-top: 15px; }
-        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .form-box { width: 320px; flex-shrink: 0; }
-        label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
-        input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        input:focus { outline: none; border-color: #0070f3; box-shadow: 0 0 0 2px rgba(0,112,243,0.15); }
-        .btn { padding: 5px 12px; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em; text-decoration: none; display: inline-block; }
-        .btn-submit { margin-top: 15px; width: 100%; padding: 9px; background: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.95em; }
-        .btn-submit:hover { background: #005ed4; }
-        .btn-green { background: #28a745; }
-        .btn-blue { background: #0070f3; }
-        .btn-red { background: #dc3545; }
-        .btn-gray { background: #6c757d; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #0070f3; color: white; padding: 10px; text-align: left; }
-        td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        tr:hover { background: #f9f9f9; }
-        .alert-success { padding: 10px 15px; border-radius: 5px; margin-bottom: 15px; background: #d4edda; color: #155724; }
-        .alert-error { padding: 10px 15px; border-radius: 5px; margin-bottom: 15px; background: #f8d7da; color: #721c24; }
-        .field-error { color: #dc3545; font-size: 0.82em; margin-top: 3px; display: block; }
-        .badge-active { background: #d4edda; color: #155724; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
-        .badge-inactive { background: #e9ecef; color: #6c757d; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; }
-        .hint { font-size: 0.78em; color: #888; margin-top: 4px; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --navy:#0D1117; --surface:#161B22; --surface2:#1C2128; --border:#21262D;
+            --indigo:#6366F1; --indigo2:#818CF8; --coral:#F472B6; --gold:#FBBF24;
+            --green:#34D399; --red:#F87171; --text1:#F0F6FC; --text2:#8B949E; --text3:#484F58;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--navy); color:var(--text1); min-height:100vh; }
+
+        /* NAV */
+        nav { display:flex; align-items:center; gap:8px; padding:0 32px; height:60px; background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+        .nav-brand { font-weight:800; font-size:1.1rem; background:linear-gradient(135deg,var(--indigo2),var(--coral)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-right:16px; letter-spacing:-0.5px; }
+        nav a { text-decoration:none; color:var(--text2); font-size:0.875rem; font-weight:500; padding:6px 12px; border-radius:6px; transition:all 0.15s; }
+        nav a:hover, nav a.active { color:var(--text1); background:var(--border); }
+        nav a.nav-cta { background:var(--indigo); color:white; margin-left:auto; }
+        nav a.nav-cta:hover { background:var(--indigo2); }
+
+        /* MAIN */
+        main { padding:40px 32px; max-width:1280px; margin:0 auto; }
+        .page-header { margin-bottom:28px; }
+        .page-header h1 { font-size:1.875rem; font-weight:800; letter-spacing:-0.5px; }
+        .page-header p { color:var(--text2); margin-top:4px; font-size:0.875rem; }
+
+        /* ALERTS */
+        .alert { padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:0.875rem; font-weight:500; }
+        .alert-success { background:rgba(52,211,153,0.1);  border:1px solid rgba(52,211,153,0.3);  color:var(--green); }
+        .alert-error   { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:var(--red); }
+
+        /* LAYOUT */
+        .layout { display:grid; grid-template-columns:340px 1fr; gap:24px; align-items:start; }
+
+        /* FORM CARD */
+        .form-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; }
+        .form-card-title { font-size:0.875rem; font-weight:700; margin-bottom:20px; color:var(--text1); }
+
+        /* FORM ELEMENTS */
+        .form-group { margin-bottom:14px; }
+        label { display:block; font-size:0.72rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+        input, select {
+            width:100%; padding:9px 12px; background:var(--surface2); border:1px solid var(--border);
+            border-radius:8px; color:var(--text1); font-family:'Inter',sans-serif; font-size:0.875rem;
+            transition:all 0.15s; outline:none;
+        }
+        input:focus, select:focus { border-color:var(--indigo); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+        input::placeholder { color:var(--text3); }
+        select option { background:var(--surface2); }
+        .field-error { color:var(--coral); font-size:0.75rem; margin-top:4px; display:block; }
+        .hint { font-size:0.72rem; color:var(--text3); margin-top:5px; line-height:1.5; }
+
+        /* PROVIDER TOGGLE */
+        .provider-tabs { display:flex; gap:8px; margin-bottom:16px; }
+        .provider-tab {
+            flex:1; padding:10px; border-radius:8px; border:1px solid var(--border);
+            background:var(--surface2); color:var(--text2); font-size:0.82rem;
+            font-weight:600; cursor:pointer; text-align:center; transition:all 0.15s;
+            font-family:'Inter',sans-serif;
+        }
+        .provider-tab.active { background:rgba(99,102,241,0.15); border-color:var(--indigo); color:var(--indigo2); }
+
+        /* SES INFO BOX */
+        .ses-info {
+            padding:12px; background:rgba(251,191,36,0.08);
+            border:1px solid rgba(251,191,36,0.25); border-radius:8px;
+            font-size:0.75rem; color:var(--gold); line-height:1.8; margin-top:8px;
+        }
+        .ses-info a { color:var(--gold); }
+        .ses-info code { background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px; }
+
+        /* SUBMIT BUTTON */
+        .btn-submit {
+            width:100%; padding:10px; background:var(--indigo); color:white;
+            border:none; border-radius:8px; font-size:0.875rem; font-weight:600;
+            cursor:pointer; font-family:'Inter',sans-serif; margin-top:16px; transition:all 0.15s;
+        }
+        .btn-submit:hover { background:var(--indigo2); }
+
+        /* TABLE CARD */
+        .table-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+        .table-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); }
+        .table-header h3 { font-size:1rem; font-weight:700; }
+        .count-badge { background:var(--border); color:var(--text2); padding:2px 8px; border-radius:20px; font-size:0.75rem; font-weight:600; }
+
+        table { width:100%; border-collapse:collapse; }
+        thead tr { background:var(--surface2); }
+        th { padding:11px 16px; text-align:left; font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text2); border-bottom:1px solid var(--border); }
+        td { padding:13px 16px; font-size:0.875rem; border-bottom:1px solid var(--border); vertical-align:middle; }
+        tbody tr:last-child td { border-bottom:none; }
+        tbody tr:hover { background:var(--surface2); }
+
+        /* BADGES */
+        .badge-active   { background:rgba(52,211,153,0.15); color:var(--green); padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:700; }
+        .badge-inactive { background:rgba(139,148,158,0.1); color:var(--text2); padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; }
+        .badge-smtp { background:rgba(99,102,241,0.15); color:var(--indigo2); padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; }
+        .badge-ses  { background:rgba(251,191,36,0.15);  color:var(--gold);    padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; }
+
+        /* ACTION BUTTONS */
+        .btn { display:inline-flex; align-items:center; padding:5px 12px; border-radius:6px; font-size:0.78rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; transition:all 0.15s; font-family:'Inter',sans-serif; }
+        .btn-activate { background:transparent; border:1px solid rgba(52,211,153,0.4); color:var(--green); }
+        .btn-activate:hover { background:rgba(52,211,153,0.1); }
+        .btn-edit { background:transparent; border:1px solid var(--border); color:var(--text2); }
+        .btn-edit:hover { border-color:var(--indigo); color:var(--indigo2); }
+        .btn-del  { background:transparent; border:1px solid var(--border); color:var(--text2); }
+        .btn-del:hover { border-color:var(--coral); color:var(--coral); }
+        .actions { display:flex; gap:6px; align-items:center; }
+
+        .empty-row td { text-align:center; color:var(--text2); padding:40px; font-size:0.875rem; }
+
+        /* DIVIDER */
+        .section-divider { border:none; border-top:1px solid var(--border); margin:16px 0; }
     </style>
 </head>
 <body>
+
 <nav>
+    <span class="nav-brand">✦ BECMS</span>
     <a href="/dashboard">Dashboard</a>
     <a href="/campaigns">Campaigns</a>
-    <a href="/campaigns/new">New Campaign</a>
     <a href="/recipients">Recipients</a>
-    <a href="/profile">⚙️ SMTP Profile</a>
+    <a href="/profile" class="active">SMTP Profile</a>
+    <a href="/query-builder">Query Builder</a>
+    <a href="/campaigns/new" class="nav-cta">+ New Campaign</a>
 </nav>
+
 <marquee style="background:#1a1a1a; color:#fbbf24; padding:8px; font-size:0.85rem;">
     ⚠️ Demo Mode — Email delivery is disabled on this hosted version. Render's free tier blocks outbound SMTP connections. All other features work normally. Run locally to enable email sending.
 </marquee>
 
-<h1>⚙️ SMTP Profiles</h1>
-<p style="color:#666; margin-top:0;">Configure which email account is used to send campaigns. Only one profile can be active at a time.</p>
+<main>
+    <div class="page-header">
+        <h1>⚙️ Email Profiles</h1>
+        <p>Configure which email account sends your campaigns. Only one profile can be active at a time.</p>
+    </div>
 
-<div th:if="${success}" class="alert-success" th:text="${success}"></div>
-<div th:if="${error}" class="alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
 
-<div class="flex">
+    <div class="layout">
 
-    <!-- Add Profile Form -->
-    <div class="form-box">
-        <div class="box">
-            <h3 style="margin-top:0;">➕ Add SMTP Profile</h3>
-            <form action="/profile" method="post" th:object="${newProfile}">
+        <!-- LEFT: Add Profile Form -->
+        <div class="form-card">
+            <div class="form-card-title">➕ Add Email Profile</div>
 
-                <label>Display Name
-                    <input type="text" th:field="*{displayName}" placeholder="e.g. Marketing Account"/>
-                    <span class="field-error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></span>
-                </label>
+            <form action="/profile" method="post" th:object="${newProfile}" id="addProfileForm">
 
-                <label>Gmail Address
-                    <input type="email" th:field="*{email}" placeholder="yourname@gmail.com"/>
-                    <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-                </label>
+                <!-- Provider Tabs -->
+                <div style="margin-bottom:4px;">
+                    <label>Email Provider</label>
+                </div>
+                <div class="provider-tabs">
+                    <button type="button" class="provider-tab active" id="tabSmtp"
+                            onclick="switchProvider('SMTP')">
+                        📧 SMTP / SendGrid
+                    </button>
+                    <button type="button" class="provider-tab" id="tabSes"
+                            onclick="switchProvider('AMAZON_SES')">
+                        ☁️ Amazon SES
+                    </button>
+                </div>
 
-                <label>App Password
-                    <input type="password" th:field="*{appPassword}" placeholder="16-character app password"/>
-                    <span class="field-error" th:if="${#fields.hasErrors('appPassword')}" th:errors="*{appPassword}"></span>
-                    <span class="hint">Generate at: Google Account → Security → App Passwords</span>
-                </label>
+                <!-- Hidden provider field -->
+                <input type="hidden" th:field="*{provider}" id="providerInput"/>
 
-                <label>SMTP Host
-                    <input type="text" th:field="*{smtpHost}" placeholder="smtp.gmail.com"/>
-                </label>
+                <hr class="section-divider"/>
 
-                <label>SMTP Port
-                    <input type="number" th:field="*{smtpPort}" placeholder="587"/>
-                </label>
+                <!-- Common Fields -->
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" th:field="*{displayName}"
+                           placeholder="e.g. Marketing Account"/>
+                    <span class="field-error"
+                          th:if="${#fields.hasErrors('displayName')}"
+                          th:errors="*{displayName}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>From Email Address</label>
+                    <input type="email" th:field="*{email}"
+                           placeholder="you@example.com"/>
+                    <span class="field-error"
+                          th:if="${#fields.hasErrors('email')}"
+                          th:errors="*{email}"></span>
+                </div>
+
+                <hr class="section-divider"/>
+
+                <!-- SMTP Fields -->
+                <div id="smtpFields">
+                    <div class="form-group">
+                        <label>App Password</label>
+                        <input type="password" th:field="*{appPassword}"
+                               placeholder="16-character Gmail app password"
+                               autocomplete="new-password"/>
+                        <span class="field-error"
+                              th:if="${#fields.hasErrors('appPassword')}"
+                              th:errors="*{appPassword}"></span>
+                        <span class="hint">
+                            Generate at: Google Account → Security → App Passwords
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label>SMTP Host</label>
+                        <input type="text" th:field="*{smtpHost}"
+                               placeholder="smtp.gmail.com"/>
+                    </div>
+                    <div class="form-group">
+                        <label>SMTP Port</label>
+                        <input type="number" th:field="*{smtpPort}"
+                               placeholder="587"/>
+                    </div>
+                </div>
+
+                <!-- Amazon SES Fields -->
+                <div id="sesFields" style="display:none;">
+                    <div class="form-group">
+                        <label>AWS Access Key ID</label>
+                        <input type="text" th:field="*{awsAccessKey}"
+                               placeholder="AKIAIOSFODNN7EXAMPLE"
+                               autocomplete="off"/>
+                        <span class="field-error"
+                              th:if="${#fields.hasErrors('awsAccessKey')}"
+                              th:errors="*{awsAccessKey}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>AWS Secret Access Key</label>
+                        <input type="password" th:field="*{awsSecretKey}"
+                               placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLE"
+                               autocomplete="new-password"/>
+                        <span class="field-error"
+                              th:if="${#fields.hasErrors('awsSecretKey')}"
+                              th:errors="*{awsSecretKey}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>AWS Region</label>
+                        <select th:field="*{awsRegion}">
+                            <option value="us-east-1">US East — N. Virginia (us-east-1)</option>
+                            <option value="us-west-2">US West — Oregon (us-west-2)</option>
+                            <option value="eu-west-1">Europe — Ireland (eu-west-1)</option>
+                            <option value="eu-central-1">Europe — Frankfurt (eu-central-1)</option>
+                            <option value="eu-north-1">Europe Stockolm — eu-north-1</option>
+                            <option value="ap-south-1">Asia Pacific — Mumbai (ap-south-1)</option>
+                            <option value="ap-southeast-1">Asia Pacific — Singapore (ap-southeast-1)</option>
+                            <option value="ap-northeast-1">Asia Pacific — Tokyo (ap-northeast-1)</option>
+                        </select>
+                        <span class="field-error"
+                              th:if="${#fields.hasErrors('awsRegion')}"
+                              th:errors="*{awsRegion}"></span>
+                    </div>
+                    <div class="ses-info">
+                        ⚠️ <strong>Before sending:</strong><br>
+                        • Verify the from email in AWS SES console<br>
+                        • IAM user must have <code>AmazonSESFullAccess</code> policy<br>
+                        • New AWS accounts are in SES Sandbox — request production access<br>
+                        <a href="https://console.aws.amazon.com/ses" target="_blank">
+                            Open AWS SES Console →
+                        </a>
+                    </div>
+                </div>
 
                 <button class="btn-submit" type="submit">Add Profile</button>
             </form>
         </div>
+
+        <!-- RIGHT: Profiles Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>All Profiles</h3>
+                <span class="count-badge"
+                      th:text="${#lists.size(profiles)} + ' total'">0 total</span>
+            </div>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Display Name</th>
+                    <th>Email</th>
+                    <th>Provider</th>
+                    <th>Details</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${profiles}">
+                    <td style="font-weight:600;" th:text="${p.displayName}"></td>
+                    <td style="color:var(--text2);" th:text="${p.email}"></td>
+
+                    <!-- Provider badge -->
+                    <td>
+                        <span th:if="${p.provider.toString() == 'AMAZON_SES'}"
+                              class="badge-ses">☁️ Amazon SES</span>
+                        <span th:unless="${p.provider.toString() == 'AMAZON_SES'}"
+                              class="badge-smtp">📧 SMTP</span>
+                    </td>
+
+                    <!-- Provider details -->
+                    <td style="color:var(--text2); font-size:0.8rem;">
+                        <span th:if="${p.provider.toString() == 'AMAZON_SES'}"
+                              th:text="${p.awsRegion}"></span>
+                        <span th:unless="${p.provider.toString() == 'AMAZON_SES'}"
+                              th:text="${p.smtpHost} + ':' + ${p.smtpPort}"></span>
+                    </td>
+
+                    <!-- Status -->
+                    <td>
+                        <span th:if="${p.active}"   class="badge-active">✅ Active</span>
+                        <span th:unless="${p.active}" class="badge-inactive">Inactive</span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td>
+                        <div class="actions">
+                            <form th:unless="${p.active}"
+                                  th:action="@{/profile/{id}/activate(id=${p.id})}"
+                                  method="post" style="display:inline;">
+                                <button class="btn btn-activate" type="submit">Activate</button>
+                            </form>
+                            <a class="btn btn-edit"
+                               th:href="@{/profile/{id}/edit(id=${p.id})}">Edit</a>
+                            <form th:action="@{/profile/{id}/delete(id=${p.id})}"
+                                  method="post" style="display:inline;"
+                                  onsubmit="return confirm('Delete this profile?')">
+                                <button class="btn btn-del" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="empty-row" th:if="${#lists.isEmpty(profiles)}">
+                    <td colspan="6">
+                        No profiles yet. Add one on the left to get started.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+</main>
 
-    <!-- Profiles Table -->
-    <div class="box" style="flex:1; overflow-x:auto;">
-        <h3 style="margin-top:0;">
-            All Profiles
-            <span style="color:#0070f3;">(<span th:text="${#lists.size(profiles)}">0</span>)</span>
-        </h3>
+<script>
+    function switchProvider(provider) {
+        // Update hidden field
+        document.getElementById('providerInput').value = provider;
 
-        <table>
-            <thead>
-            <tr>
-                <th>Display Name</th>
-                <th>Email</th>
-                <th>Host</th>
-                <th>Port</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="p : ${profiles}">
-                <td th:text="${p.displayName}"></td>
-                <td th:text="${p.email}"></td>
-                <td th:text="${p.smtpHost}"></td>
-                <td th:text="${p.smtpPort}"></td>
-                <td>
-                    <span th:if="${p.active}" class="badge-active">✅ Active</span>
-                    <span th:unless="${p.active}" class="badge-inactive">Inactive</span>
-                </td>
-                <td style="white-space: nowrap;">
-                    <!-- Activate button — only show if not already active -->
-                    <form th:unless="${p.active}"
-                          th:action="@{/profile/{id}/activate(id=${p.id})}"
-                          method="post" style="display:inline;">
-                        <button class="btn btn-green" type="submit">Activate</button>
-                    </form>
+        // Toggle tab styles
+        document.getElementById('tabSmtp').classList.toggle('active', provider === 'SMTP');
+        document.getElementById('tabSes').classList.toggle('active', provider === 'AMAZON_SES');
 
-                    <a class="btn btn-blue" th:href="@{/profile/{id}/edit(id=${p.id})}">Edit</a>
+        // Toggle field sections
+        document.getElementById('smtpFields').style.display = provider === 'SMTP' ? 'block' : 'none';
+        document.getElementById('sesFields').style.display  = provider === 'AMAZON_SES' ? 'block' : 'none';
+    }
 
-                    <form th:action="@{/profile/{id}/delete(id=${p.id})}"
-                          method="post" style="display:inline;"
-                          onsubmit="return confirm('Delete this profile?')">
-                        <button class="btn btn-red" type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(profiles)}">
-                <td colspan="6" style="text-align:center; color:#999; padding:20px;">
-                    No SMTP profiles yet. Add one above to get started.
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+    // Init on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        const current = document.getElementById('providerInput').value || 'SMTP';
+        switchProvider(current);
+    });
+</script>
+
 </body>
 </html>

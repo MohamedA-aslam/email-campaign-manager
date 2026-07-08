@@ -28,21 +28,41 @@ public class SmtpProfile {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @NotBlank(message = "App password is required")
-    @Column(name = "app_password", nullable = false)
+    // SMTP fields
+    @Column(name = "app_password")
     private String appPassword;
 
-    @NotBlank(message = "SMTP host is required")
-    @Column(name = "smtp_host", nullable = false)
+    @Column(name = "smtp_host")
     @Builder.Default
     private String smtpHost = "smtp.gmail.com";
 
-    @NotNull(message = "SMTP port is required")
-    @Column(name = "smtp_port", nullable = false)
+    @Column(name = "smtp_port")
     @Builder.Default
     private Integer smtpPort = 587;
+
+    // AWS SES fields ── NEW
+    @Column(name = "aws_access_key")
+    private String awsAccessKey;
+
+    @Column(name = "aws_secret_key")
+    private String awsSecretKey;
+
+    @Column(name = "aws_region")
+    @Builder.Default
+    private String awsRegion = "us-east-1";
+
+    // Provider
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider", nullable = false)
+    @Builder.Default
+    private EmailProvider provider = EmailProvider.SMTP;
 
     @Column(name = "is_active", nullable = false)
     @Builder.Default
     private boolean active = false;
+
+    public enum EmailProvider {
+        SMTP,
+        AMAZON_SES
+    }
 }

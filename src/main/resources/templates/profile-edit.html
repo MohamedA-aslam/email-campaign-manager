@@ -29,6 +29,7 @@
     <a href="/campaigns/new">New Campaign</a>
     <a href="/recipients">Recipients</a>
     <a href="/profile">⚙️ SMTP Profile</a>
+    <a href="/query-builder">Query Builder</a>
 </nav>
 <marquee style="background:#1a1a1a; color:#fbbf24; padding:8px; font-size:0.85rem;">
     ⚠️ Demo Mode — Email delivery is disabled on this hosted version. Render's free tier blocks outbound SMTP connections. All other features work normally. Run locally to enable email sending.
@@ -45,25 +46,66 @@
             <span class="field-error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></span>
         </label>
 
-        <label>Gmail Address
-            <input type="email" th:field="*{email}" placeholder="yourname@gmail.com"/>
-            <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        <label>Email Provider
+            <select th:field="*{provider}"
+                    onchange="toggleProviderFields(this.value)">
+                <option value="SMTP">📧 SMTP / SendGrid</option>
+                <option value="AMAZON_SES">☁️ Amazon SES</option>
+            </select>
         </label>
 
-        <label>App Password
-            <input type="password" th:field="*{appPassword}" placeholder="Leave blank to keep existing"/>
-            <span class="field-error" th:if="${#fields.hasErrors('appPassword')}" th:errors="*{appPassword}"></span>
-            <span class="hint">Generate at: Google Account → Security → App Passwords</span>
-        </label>
+        <div id="smtpFields"
+             th:style="${profile.provider.toString() == 'AMAZON_SES'} ? 'display:none' : ''">
+            <label>App Password
+                <input type="password" th:field="*{appPassword}"
+                       placeholder="Leave blank to keep existing"/>
+            </label>
+            <label>SMTP Host
+                <input type="text" th:field="*{smtpHost}"/>
+            </label>
+            <label>SMTP Port
+                <input type="number" th:field="*{smtpPort}"/>
+            </label>
+        </div>
 
-        <label>SMTP Host
-            <input type="text" th:field="*{smtpHost}"/>
-        </label>
+        <div id="sesFields"
+             th:style="${profile.provider.toString() == 'AMAZON_SES'} ? '' : 'display:none'">
+            <label>AWS Access Key
+                <input type="text" th:field="*{awsAccessKey}"
+                       placeholder="AKIAIOSFODNN7EXAMPLE" autocomplete="off"/>
+            </label>
+            <label>AWS Secret Key
+                <input type="password" th:field="*{awsSecretKey}"
+                       placeholder="Leave blank to keep existing" autocomplete="off"/>
+            </label>
+            <label>AWS Region
+                <select th:field="*{awsRegion}">
+                    <option value="us-east-1">US East — us-east-1</option>
+                    <option value="us-west-2">US West — us-west-2</option>
+                    <option value="eu-west-1">Europe Ireland — eu-west-1</option>
+                    <option value="eu-central-1">Europe Frankfurt — eu-central-1</option>
+                    <option value="eu-north-1">Europe Stockolm — eu-north-1</option>
+                    <option value="ap-south-1">Asia Pacific Mumbai — ap-south-1</option>
+                    <option value="ap-southeast-1">Asia Pacific Singapore — ap-southeast-1</option>
+                    <option value="ap-northeast-1">Asia Pacific Tokyo — ap-northeast-1</option>
 
-        <label>SMTP Port
-            <input type="number" th:field="*{smtpPort}"/>
-        </label>
+                </select>
+            </label>
+        </div>
 
+        <script>
+            function toggleProviderFields(provider) {
+                const smtp = document.getElementById('smtpFields');
+                const ses  = document.getElementById('sesFields');
+                if (provider === 'AMAZON_SES') {
+                    smtp.style.display = 'none';
+                    ses.style.display  = 'block';
+                } else {
+                    smtp.style.display = 'block';
+                    ses.style.display  = 'none';
+                }
+            }
+        </script>
         <div class="btn-row">
             <button type="submit" class="btn btn-primary">💾 Save Changes</button>
             <a href="/profile" class="btn btn-secondary">✕ Cancel</a>

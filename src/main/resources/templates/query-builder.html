@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BECMS — Query Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        :root {
+            --navy:#0D1117; --surface:#161B22; --surface2:#1C2128; --border:#21262D;
+            --indigo:#6366F1; --indigo2:#818CF8; --coral:#F472B6; --gold:#FBBF24;
+            --green:#34D399; --red:#F87171; --text1:#F0F6FC; --text2:#8B949E; --text3:#484F58;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--navy); color:var(--text1); min-height:100vh; }
+        nav { display:flex; align-items:center; gap:8px; padding:0 32px; height:60px; background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+        .nav-brand { font-weight:800; font-size:1.1rem; background:linear-gradient(135deg,var(--indigo2),var(--coral)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-right:16px; }
+        nav a { text-decoration:none; color:var(--text2); font-size:0.875rem; font-weight:500; padding:6px 12px; border-radius:6px; transition:all 0.15s; }
+        nav a:hover, nav a.active { color:var(--text1); background:var(--border); }
+        nav a.nav-cta { background:var(--indigo); color:white; margin-left:auto; }
+        main { padding:40px 32px; max-width:1280px; margin:0 auto; }
+        .page-header { margin-bottom:28px; }
+        .page-header h1 { font-size:1.875rem; font-weight:800; letter-spacing:-0.5px; }
+        .page-header p { color:var(--text2); margin-top:4px; font-size:0.875rem; }
+        .layout { display:grid; grid-template-columns:280px 1fr; gap:24px; align-items:start; }
+
+        /* LEFT PANEL */
+        .side-panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; position:sticky; top:80px; }
+        .panel-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text2); margin-bottom:12px; }
+        .table-item { padding:8px 12px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; margin-bottom:6px; font-size:0.82rem; cursor:pointer; transition:all 0.15s; }
+        .table-item:hover { border-color:var(--indigo); color:var(--indigo2); }
+        .schema-item { font-size:0.75rem; color:var(--text3); padding:4px 8px; }
+        .schema-col { color:var(--text2); }
+
+        /* MAIN AREA */
+        .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:20px; overflow:hidden; }
+        .card-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+        .card-header h3 { font-size:0.9rem; font-weight:700; }
+        .card-body { padding:20px; }
+
+        /* SQL EDITOR */
+        #sqlEditor {
+            width:100%; min-height:120px; padding:14px 16px;
+            background:#0D1117; border:1px solid var(--border);
+            border-radius:8px; color:#79C0FF;
+            font-family:'Courier New', monospace; font-size:0.875rem;
+            resize:vertical; outline:none; line-height:1.6;
+            transition:border-color 0.15s;
+        }
+        #sqlEditor:focus { border-color:var(--indigo); }
+
+        .quick-queries { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+        .quick-btn { padding:5px 12px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text2); font-size:0.75rem; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; }
+        .quick-btn:hover { border-color:var(--indigo); color:var(--indigo2); }
+
+        .btn { display:inline-flex; align-items:center; gap:6px; padding:8px 18px; border-radius:8px; font-size:0.875rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; transition:all 0.15s; font-family:'Inter',sans-serif; }
+        .btn-primary { background:var(--indigo); color:white; }
+        .btn-primary:hover { background:var(--indigo2); }
+        .btn-success { background:var(--green); color:#0D1117; }
+        .btn-success:hover { opacity:0.9; }
+        .btn-ghost { background:transparent; border:1px solid var(--border); color:var(--text2); }
+        .btn-ghost:hover { border-color:var(--text2); color:var(--text1); }
+
+        /* RESULTS TABLE */
+        .results-table-wrapper { overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; }
+        th { padding:10px 14px; text-align:left; font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text2); background:var(--surface2); border-bottom:1px solid var(--border); }
+        td { padding:10px 14px; font-size:0.82rem; border-bottom:1px solid var(--border); }
+        tbody tr:last-child td { border-bottom:none; }
+        tbody tr:hover { background:var(--surface2); }
+
+        /* MAPPING SECTION */
+        .mapping-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:12px; align-items:center; margin-bottom:10px; }
+        .mapping-label { font-size:0.78rem; color:var(--text2); text-align:center; }
+        .map-col { padding:8px 12px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; font-size:0.82rem; color:var(--text1); font-family:'Courier New', monospace; }
+        .map-arrow { color:var(--indigo2); font-size:1rem; text-align:center; }
+        .map-var { padding:8px 12px; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); border-radius:8px; color:var(--indigo2); font-size:0.82rem; font-family:'Courier New', monospace; width:100%; outline:none; }
+        .map-var:focus { border-color:var(--indigo); }
+
+        /* ERROR / SUCCESS */
+        .alert { padding:12px 16px; border-radius:8px; font-size:0.875rem; font-weight:500; margin-bottom:16px; }
+        .alert-error   { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:var(--red); }
+        .alert-success { background:rgba(52,211,153,0.1);  border:1px solid rgba(52,211,153,0.3);  color:var(--green); }
+        .alert-info    { background:rgba(99,102,241,0.1);  border:1px solid rgba(99,102,241,0.3);  color:var(--indigo2); }
+
+        .row-count { font-size:0.75rem; color:var(--text2); }
+        .empty-state { text-align:center; padding:40px; color:var(--text3); font-size:0.875rem; }
+
+        /* VARIABLE CHIP */
+        .var-chip { display:inline-block; padding:2px 8px; background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.4); border-radius:12px; color:var(--indigo2); font-size:0.75rem; font-weight:600; font-family:'Courier New', monospace; }
+
+        /* SAVED BADGE */
+        .saved-badge { display:none; align-items:center; gap:6px; padding:6px 12px; background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.3); border-radius:8px; color:var(--green); font-size:0.8rem; font-weight:600; }
+        .saved-badge.show { display:flex; }
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand">✦ BECMS</span>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/campaigns">Campaigns</a>
+    <a href="/recipients">Recipients</a>
+    <a href="/profile">SMTP Profile</a>
+    <a href="/query-builder" class="active">Query Builder</a>
+    <a href="/campaigns/new" class="nav-cta">+ New Campaign</a>
+    <a href="/query-builder">Query Builder</a>
+</nav>
+<marquee style="background:#1a1a1a; color:#fbbf24; padding:8px; font-size:0.85rem;">
+    ⚠️ Demo Mode — Email delivery is disabled on this hosted version. Render's free tier blocks outbound SMTP connections. All other features work normally. Run locally to enable email sending.
+</marquee>
+
+<main>
+    <div class="page-header">
+        <h1>🔍 Query Builder</h1>
+        <p>Write SQL to fetch recipient data and map columns to dynamic email variables</p>
+    </div>
+
+    <div class="layout">
+
+        <!-- LEFT: Schema Browser -->
+        <div class="side-panel">
+            <div class="panel-title">📂 Available Tables</div>
+
+            <div th:each="table : ${tables}">
+                <div class="table-item" th:onclick="|insertTableQuery('${table}')|"
+                     th:text="'📋 ' + ${table}"></div>
+            </div>
+
+            <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border);">
+                <div class="panel-title">🏷️ Variable Reference</div>
+                <div style="font-size:0.75rem; color:var(--text3); line-height:1.8;">
+                    <div>Map your columns to these:</div>
+                    <div style="margin-top:8px; display:flex; flex-direction:column; gap:4px;">
+                        <span class="var-chip">{FirstName}</span>
+                        <span class="var-chip">{FullName}</span>
+                        <span class="var-chip">{Email}</span>
+                        <span class="var-chip">{CustomVar}</span>
+                        <div style="color:var(--text3); font-size:0.72rem; margin-top:4px;">
+                            You can use any {Variable} name — just map your column to it
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border);">
+                <div class="panel-title">💡 Tips</div>
+                <div style="font-size:0.72rem; color:var(--text3); line-height:1.8;">
+                    <div>• Only SELECT queries allowed</div>
+                    <div>• Results limited to 100 rows</div>
+                    <div>• Include email column to match recipients</div>
+                    <div>• Save mapping before sending campaign</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Query + Results + Mapping -->
+        <div>
+
+            <!-- SQL Editor -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>📝 SQL Query</h3>
+                    <div id="savedBadge" class="saved-badge">✓ Mapping Saved</div>
+                </div>
+                <div class="card-body">
+                    <textarea id="sqlEditor" placeholder="SELECT name, email, subscription_status FROM recipients WHERE subscription_status = 'SUBSCRIBED'"></textarea>
+
+                    <div class="quick-queries">
+                        <span style="font-size:0.72rem; color:var(--text3); align-self:center;">Quick:</span>
+                        <button class="quick-btn" onclick="setQuery('SELECT name, email FROM recipients WHERE subscription_status = \'SUBSCRIBED\'')">All Subscribed</button>
+                        <button class="quick-btn" onclick="setQuery('SELECT name, email FROM recipients')">All Recipients</button>
+                        <button class="quick-btn" onclick="setQuery('SELECT r.name, r.email FROM recipients r LEFT JOIN delivery_logs d ON r.email = d.recipient_email WHERE d.id IS NULL')">Never Emailed</button>
+                        <button class="quick-btn" onclick="setQuery('SELECT name, email FROM recipients WHERE subscription_status = \'SUBSCRIBED\' LIMIT 10')">First 10</button>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:14px;">
+                        <button class="btn btn-primary" onclick="executeQuery()">▶ Run Query</button>
+                        <button class="btn btn-ghost" onclick="clearQuery()">✕ Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error -->
+            <div id="errorBox" class="alert alert-error" style="display:none;"></div>
+
+            <!-- Results -->
+            <div class="card" id="resultsCard" style="display:none;">
+                <div class="card-header">
+                    <h3>📊 Results</h3>
+                    <span class="row-count" id="rowCount"></span>
+                </div>
+                <div class="results-table-wrapper">
+                    <table>
+                        <thead id="resultsHead"></thead>
+                        <tbody id="resultsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Column Mapping -->
+            <div class="card" id="mappingCard" style="display:none;">
+                <div class="card-header">
+                    <h3>🔗 Map Columns → Variables</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info" style="margin-bottom:16px;">
+                        Map your query columns to email variables. Use these variables in your campaign content like <span class="var-chip">{FirstName}</span> or any custom name you define.
+                    </div>
+
+                    <div class="mapping-grid" style="margin-bottom:6px;">
+                        <div class="mapping-label">Query Column</div>
+                        <div></div>
+                        <div class="mapping-label">Email Variable</div>
+                    </div>
+
+                    <div id="mappingRows"></div>
+
+                    <div style="margin-top:16px; display:flex; gap:10px; align-items:center;">
+                        <button class="btn btn-success" onclick="saveMapping()">
+                            💾 Save Mapping
+                        </button>
+                        <button class="btn btn-ghost" onclick="addCustomMapping()">
+                            + Add Custom Variable
+                        </button>
+                    </div>
+
+                    <div style="margin-top:16px; padding:14px; background:var(--surface2); border-radius:8px; border:1px solid var(--border);">
+                        <div style="font-size:0.78rem; font-weight:600; margin-bottom:8px; color:var(--text2);">📋 How to use in your campaign:</div>
+                        <div style="font-size:0.78rem; color:var(--text3); line-height:1.8;">
+                            1. Save this mapping<br>
+                            2. Go to <a href="/campaigns/new" style="color:var(--indigo2);">New Campaign</a><br>
+                            3. Type <span class="var-chip">{FirstName}</span> anywhere in subject or body<br>
+                            4. Send — each recipient gets their personalized version
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script>
+    let currentColumns = [];
+    let customMappings = [];
+
+    function setQuery(sql) {
+        document.getElementById('sqlEditor').value = sql;
+    }
+
+    function insertTableQuery(table) {
+        setQuery(`SELECT * FROM ${table} LIMIT 20`);
+    }
+
+    function clearQuery() {
+        document.getElementById('sqlEditor').value = '';
+        document.getElementById('resultsCard').style.display  = 'none';
+        document.getElementById('mappingCard').style.display  = 'none';
+        document.getElementById('errorBox').style.display     = 'none';
+        currentColumns = [];
+    }
+
+    async function executeQuery() {
+        const sql = document.getElementById('sqlEditor').value.trim();
+        if (!sql) { alert('Please enter a SQL query.'); return; }
+
+        document.getElementById('errorBox').style.display   = 'none';
+        document.getElementById('resultsCard').style.display = 'none';
+        document.getElementById('mappingCard').style.display = 'none';
+
+        try {
+            const res  = await fetch('/query-builder/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sql })
+            });
+            const data = await res.json();
+
+            if (data.error) {
+                document.getElementById('errorBox').textContent = '⚠️ ' + data.error;
+                document.getElementById('errorBox').style.display = 'block';
+                return;
+            }
+
+            currentColumns = data.columns;
+            renderResults(data);
+            renderMapping(data.columns);
+
+        } catch(e) {
+            document.getElementById('errorBox').textContent = '⚠️ Request failed: ' + e.message;
+            document.getElementById('errorBox').style.display = 'block';
+        }
+    }
+
+    function renderResults(data) {
+        const head = document.getElementById('resultsHead');
+        const body = document.getElementById('resultsBody');
+
+        // Header
+        head.innerHTML = '<tr>' + data.columns.map(c =>
+            `<th>${c}</th>`).join('') + '</tr>';
+
+        // Rows
+        if (data.rows.length === 0) {
+            body.innerHTML = `<tr><td colspan="${data.columns.length}" class="empty-state">No results found.</td></tr>`;
+        } else {
+            body.innerHTML = data.rows.map(row =>
+                '<tr>' + data.columns.map(c =>
+                    `<td>${row[c] !== null ? row[c] : '<span style="color:var(--text3)">null</span>'}</td>`
+                ).join('') + '</tr>'
+            ).join('');
+        }
+
+        document.getElementById('rowCount').textContent = data.totalRows + ' row(s)';
+        document.getElementById('resultsCard').style.display = 'block';
+    }
+
+    function renderMapping(columns) {
+        const container = document.getElementById('mappingRows');
+        customMappings = [];
+
+        // Auto-suggest variable names based on column names
+        const suggestions = {
+            'name':                 '{FullName}',
+            'full_name':            '{FullName}',
+            'fullname':             '{FullName}',
+            'first_name':           '{FirstName}',
+            'firstname':            '{FirstName}',
+            'email':                '{Email}',
+            'email_address':        '{Email}',
+            'subscription_status':  '{Status}',
+            'company':              '{Company}',
+            'phone':                '{Phone}',
+        };
+
+        container.innerHTML = columns.map((col, i) => {
+            const suggested = suggestions[col.toLowerCase()] || `{${toPascalCase(col)}}`;
+            return `
+                <div class="mapping-grid" id="mapRow_${i}">
+                    <div class="map-col">${col}</div>
+                    <div class="map-arrow">→</div>
+                    <input class="map-var" type="text"
+                           id="mapVar_${i}"
+                           value="${suggested}"
+                           placeholder="{VariableName}"
+                           data-column="${col}"/>
+                </div>`;
+        }).join('');
+
+        document.getElementById('mappingCard').style.display = 'block';
+    }
+
+    function addCustomMapping() {
+        const container = document.getElementById('mappingRows');
+        const id = 'custom_' + Date.now();
+        const div = document.createElement('div');
+        div.className = 'mapping-grid';
+        div.id = id;
+        div.innerHTML = `
+            <input class="map-var" type="text" placeholder="column_name" data-custom="true" data-id="${id}" id="customCol_${id}" style="color:var(--text1);"/>
+            <div class="map-arrow">→</div>
+            <div style="display:flex; gap:6px;">
+                <input class="map-var" type="text" placeholder="{CustomVar}" id="customVar_${id}"/>
+                <button type="button" onclick="document.getElementById('${id}').remove()"
+                    style="background:transparent; border:1px solid var(--border); border-radius:6px; color:var(--coral); cursor:pointer; padding:4px 8px;">✕</button>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    async function saveMapping() {
+        const mapping = {};
+
+        // Standard column mappings
+        currentColumns.forEach((col, i) => {
+            const varInput = document.getElementById(`mapVar_${i}`);
+            if (varInput && varInput.value.trim()) {
+                mapping[col] = varInput.value.trim();
+            }
+        });
+
+        // Custom mappings
+        document.querySelectorAll('[data-custom="true"]').forEach(colInput => {
+            const id = colInput.dataset.id;
+            const col = colInput.value.trim();
+            const varVal = document.getElementById(`customVar_${id}`)?.value.trim();
+            if (col && varVal) mapping[col] = varVal;
+        });
+
+        try {
+            await fetch('/query-builder/save-mapping', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(mapping)
+            });
+
+            const badge = document.getElementById('savedBadge');
+            badge.classList.add('show');
+            setTimeout(() => badge.classList.remove('show'), 3000);
+
+        } catch(e) {
+            alert('Failed to save mapping: ' + e.message);
+        }
+    }
+
+    function toPascalCase(str) {
+        return str.split(/[_\s]/).map(w =>
+            w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+        ).join('');
+    }
+
+    // Load existing mapping on page load
+    window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res  = await fetch('/query-builder/current-mapping');
+            const data = await res.json();
+            if (data.sql) {
+                document.getElementById('sqlEditor').value = data.sql;
+            }
+        } catch(e) {}
+    });
+</script>
+</body>
+</html>

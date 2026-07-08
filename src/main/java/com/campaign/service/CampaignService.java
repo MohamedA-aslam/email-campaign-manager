@@ -26,6 +26,7 @@ public class CampaignService {
     private final DeliveryLogRepository deliveryLogRepository;
     private final RecipientService recipientService;
     private final EmailService emailService;
+    private final QueryBuilderService queryBuilderService;
 
     // Returned by executeCampaign() so callers can build an analysis report
     public record ExecutionResult(long total, long sent, long failed, List<String> failureReasons) {}
@@ -74,10 +75,14 @@ public class CampaignService {
         List<String> failureReasons = new ArrayList<>();
 
         for (Recipient recipient : recipients) {
+            String recipientContent = campaign.getContent()
+                    .replace("{FirstName}",  getFirstName(recipient.getName()))
+                    .replace("{FullName}",   recipient.getName())
+                    .replace("{Email}",      recipient.getEmail());
             String failureReason = emailService.sendEmail(
                     recipient.getEmail(),
                     campaign.getSubject(),
-                    campaign.getContent()
+                    recipientContent
             );
 
             DeliveryLog deliveryLog = DeliveryLog.builder()
@@ -103,6 +108,11 @@ public class CampaignService {
         log.info("Campaign completed: {} — sent={}, failed={}", campaign.getName(), sentCount, failedCount);
 
         return new ExecutionResult(recipients.size(), sentCount, failedCount, failureReasons);
+    }
+    // Helper — extracts first name from full name
+    private String getFirstName(String fullName) {
+        if (fullName == null || fullName.isBlank()) return "there";
+        return fullName.split(" ")[0];
     }
 
     public CampaignDTO toCampaignDTO(Campaign campaign) {

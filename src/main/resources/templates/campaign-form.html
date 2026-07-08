@@ -19,42 +19,104 @@
         nav a:hover { color:var(--text1); background:var(--border); }
         nav a.nav-cta { background:var(--indigo); color:white; margin-left:auto; }
         nav a.nav-cta:hover { background:var(--indigo2); }
-        main { padding:40px 32px; max-width:760px; margin:0 auto; }
-        .page-header { margin-bottom:32px; }
-        .page-header h1 { font-size:1.875rem; font-weight:800; letter-spacing:-0.5px; }
-        .page-header p { color:var(--text2); margin-top:4px; font-size:0.9rem; }
-        .form-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px; }
-        .form-group { margin-bottom:20px; }
-        label { display:block; font-size:0.8rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
-        input, textarea, select {
-            width:100%; padding:10px 14px; background:var(--surface2); border:1px solid var(--border);
-            border-radius:8px; color:var(--text1); font-family:'Inter',sans-serif; font-size:0.9rem;
-            transition:all 0.15s; outline:none;
-        }
-        input:focus, textarea:focus, select:focus { border-color:var(--indigo); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
-        input::placeholder, textarea::placeholder { color:var(--text3); }
-        textarea { height:180px; resize:vertical; }
+        main { padding:32px; max-width:1400px; margin:0 auto; }
+        .page-header { margin-bottom:24px; }
+        .page-header h1 { font-size:1.75rem; font-weight:800; letter-spacing:-0.5px; }
+        .page-header p { color:var(--text2); margin-top:4px; font-size:0.875rem; }
+        .builder-layout { display:grid; grid-template-columns:260px 1fr 320px; gap:20px; align-items:start; }
+        .widgets-panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; position:sticky; top:80px; max-height:calc(100vh - 100px); overflow-y:auto; }
+        .panel-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text2); margin-bottom:12px; }
+        .widget-item { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; cursor:grab; transition:all 0.15s; user-select:none; }
+        .widget-item:hover { border-color:var(--indigo); color:var(--indigo2); }
+        .widget-item:active { cursor:grabbing; opacity:0.7; }
+        .widget-icon { font-size:1.1rem; width:24px; text-align:center; }
+        .widget-label { font-size:0.82rem; font-weight:500; }
+        .widget-desc { font-size:0.72rem; color:var(--text3); margin-top:1px; }
+        .form-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin-bottom:20px; }
+        .form-group { margin-bottom:16px; }
+        .form-group:last-child { margin-bottom:0; }
+        label { display:block; font-size:0.72rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+        input, select { width:100%; padding:9px 12px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--text1); font-family:'Inter',sans-serif; font-size:0.875rem; transition:all 0.15s; outline:none; }
+        input:focus, select:focus { border-color:var(--indigo); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+        input::placeholder { color:var(--text3); }
         input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter:invert(0.5); }
-        .field-error { color:var(--coral); font-size:0.78rem; margin-top:6px; }
-        .subject-row { display:flex; gap:10px; align-items:flex-start; }
+        .field-error { color:var(--coral); font-size:0.75rem; margin-top:4px; }
+        .subject-row { display:flex; gap:8px; }
         .subject-row input { flex:1; }
-        .btn-generate {
-            display:inline-flex; align-items:center; gap:6px; padding:10px 16px;
-            background:linear-gradient(135deg, #7C3AED, var(--indigo));
-            color:white; border:none; border-radius:8px; font-size:0.85rem;
-            font-weight:600; cursor:pointer; white-space:nowrap; font-family:'Inter',sans-serif;
-            transition:all 0.15s; margin-top:0;
-        }
-        .btn-generate:hover { opacity:0.9; transform:translateY(-1px); }
-        .btn-generate:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
-        .form-actions { display:flex; gap:10px; margin-top:28px; }
-        .btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; border-radius:8px; font-size:0.875rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; transition:all 0.15s; font-family:'Inter',sans-serif; }
+        .builder-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+        .builder-card-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+        .builder-card-header span { font-size:0.82rem; font-weight:600; color:var(--text2); }
+        .builder-tabs { display:flex; gap:4px; }
+        .tab-btn { padding:5px 12px; border-radius:6px; font-size:0.78rem; font-weight:600; border:none; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; }
+        .tab-btn.active { background:var(--indigo); color:white; }
+        .tab-btn:not(.active) { background:transparent; color:var(--text2); }
+        .tab-btn:not(.active):hover { background:var(--border); color:var(--text1); }
+        #dropCanvas { min-height:400px; padding:16px; transition:all 0.15s; }
+        #dropCanvas.drag-over { background:rgba(99,102,241,0.05); border:2px dashed var(--indigo); }
+        .drop-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px; color:var(--text3); gap:8px; }
+        .drop-placeholder .icon { font-size:2rem; }
+        .drop-placeholder p { font-size:0.85rem; }
+        .canvas-block { background:var(--surface2); border:1px solid var(--border); border-radius:8px; margin-bottom:10px; position:relative; transition:all 0.15s; }
+        .canvas-block:hover { border-color:var(--indigo); }
+        .canvas-block.selected { border-color:var(--indigo); box-shadow:0 0 0 2px rgba(99,102,241,0.2); }
+        .block-toolbar { display:none; position:absolute; top:-1px; right:-1px; background:var(--indigo); border-radius:0 8px 0 8px; padding:4px 6px; gap:4px; z-index:10; }
+        .canvas-block:hover .block-toolbar { display:flex; }
+        .block-toolbar button { background:transparent; border:none; color:white; cursor:pointer; font-size:0.75rem; padding:2px 4px; border-radius:3px; transition:background 0.1s; }
+        .block-toolbar button:hover { background:rgba(255,255,255,0.2); }
+        .block-drag-handle { position:absolute; left:-1px; top:50%; transform:translateY(-50%); background:var(--indigo); color:white; border-radius:8px 0 0 8px; padding:6px 4px; cursor:grab; display:none; font-size:0.7rem; writing-mode:vertical-rl; }
+        .canvas-block:hover .block-drag-handle { display:flex; }
+        .block-content { padding:16px; }
+        .block-heading { font-size:1.25rem; font-weight:700; color:var(--text1); outline:none; width:100%; }
+        .block-text { font-size:0.9rem; color:var(--text2); outline:none; width:100%; min-height:60px; resize:none; background:transparent; border:none; font-family:'Inter',sans-serif; line-height:1.6; }
+        .block-divider { border:none; border-top:1px solid var(--border); margin:8px 0; }
+        .block-button-preview { display:inline-block; padding:10px 24px; background:var(--indigo); color:white; border-radius:6px; font-size:0.875rem; font-weight:600; text-align:center; cursor:text; outline:none; min-width:120px; }
+        .block-image-placeholder { background:var(--border); border-radius:6px; height:160px; display:flex; align-items:center; justify-content:center; color:var(--text3); font-size:0.85rem; flex-direction:column; gap:6px; }
+        .block-image-url { width:100%; padding:6px 10px; margin-top:8px; background:var(--surface); border:1px solid var(--border); border-radius:6px; color:var(--text1); font-size:0.8rem; outline:none; font-family:'Inter',sans-serif; }
+        .block-image-url::placeholder { color:var(--text3); }
+        .block-image-preview { width:100%; border-radius:6px; display:none; max-height:200px; object-fit:cover; }
+        .block-spacer { height:32px; display:flex; align-items:center; justify-content:center; color:var(--text3); font-size:0.72rem; }
+        .block-social { display:flex; gap:12px; justify-content:center; padding:8px; }
+        .social-icon { width:32px; height:32px; border-radius:50%; background:var(--border); display:flex; align-items:center; justify-content:center; font-size:0.9rem; cursor:pointer; }
+        .block-columns { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .col-box { background:var(--surface); border:1px dashed var(--border); border-radius:6px; padding:12px; min-height:60px; font-size:0.82rem; color:var(--text3); outline:none; }
+        #rawTextarea { width:100%; min-height:400px; padding:16px; background:var(--surface2); border:none; color:var(--text1); font-family:'Inter',sans-serif; font-size:0.875rem; resize:vertical; outline:none; display:none; }
+        #contentField { display:none; }
+        .props-panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; position:sticky; top:80px; max-height:calc(100vh - 100px); overflow-y:auto; }
+        .props-empty { text-align:center; color:var(--text3); font-size:0.82rem; padding:20px; }
+        .props-empty .icon { font-size:1.5rem; margin-bottom:8px; }
+        .prop-group { margin-bottom:16px; }
+        .prop-label { font-size:0.72rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; display:block; }
+        .prop-input { width:100%; padding:7px 10px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text1); font-family:'Inter',sans-serif; font-size:0.82rem; outline:none; }
+        .prop-input:focus { border-color:var(--indigo); }
+        .color-row { display:flex; gap:6px; flex-wrap:wrap; }
+        .color-swatch { width:28px; height:28px; border-radius:6px; border:2px solid transparent; cursor:pointer; transition:all 0.15s; }
+        .color-swatch.selected { border-color:var(--text1); }
+        .align-row { display:flex; gap:4px; }
+        .align-btn { flex:1; padding:5px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text2); font-size:0.8rem; cursor:pointer; transition:all 0.15s; text-align:center; }
+        .align-btn.active, .align-btn:hover { background:var(--indigo); color:white; border-color:var(--indigo); }
+        .btn { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; border-radius:8px; font-size:0.875rem; font-weight:600; text-decoration:none; border:none; cursor:pointer; transition:all 0.15s; font-family:'Inter',sans-serif; }
         .btn-primary { background:var(--indigo); color:white; }
         .btn-primary:hover { background:var(--indigo2); }
         .btn-ghost { background:transparent; border:1px solid var(--border); color:var(--text2); }
         .btn-ghost:hover { border-color:var(--text2); color:var(--text1); }
-        .ai-hint { font-size:0.75rem; color:var(--text3); margin-top:6px; }
-        .generating-msg { font-size:0.8rem; color:var(--indigo2); margin-top:8px; display:none; }
+        .btn-generate { background:linear-gradient(135deg,#7C3AED,var(--indigo)); color:white; border:none; white-space:nowrap; }
+        .btn-generate:hover { opacity:0.9; }
+        .btn-generate:disabled { opacity:0.5; cursor:not-allowed; }
+        .form-actions { display:flex; gap:10px; margin-top:20px; }
+        /* Variable chips */
+        .var-chip { display:inline-block; padding:4px 10px; background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.4); border-radius:12px; color:var(--indigo2); font-size:0.78rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:all 0.15s; user-select:none; margin-bottom:4px; }
+        .var-chip:hover { background:rgba(99,102,241,0.4); transform:translateY(-1px); }
+        .var-chip:active { transform:translateY(0); }
+        /* Preview modal */
+        .preview-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:999; align-items:center; justify-content:center; }
+        .preview-overlay.open { display:flex; }
+        .preview-modal { background:var(--surface); border:1px solid var(--border); border-radius:16px; width:620px; max-height:85vh; overflow-y:auto; padding:28px; }
+        .preview-modal h3 { font-size:1.1rem; font-weight:700; margin-bottom:16px; }
+        .preview-body { background:white; border-radius:8px; padding:24px; color:#1a1a1a; font-family:'Inter',sans-serif; font-size:0.9rem; line-height:1.8; white-space:pre-wrap; }
+        .preview-controls { display:flex; gap:10px; margin-bottom:14px; align-items:center; flex-wrap:wrap; }
+        .preview-controls label { font-size:0.78rem; color:var(--text2); margin-bottom:0; text-transform:none; letter-spacing:0; white-space:nowrap; }
+        .preview-controls input { padding:6px 10px; font-size:0.82rem; width:160px; }
+        .highlighted-var { background:#6366F1; color:white; padding:1px 7px; border-radius:4px; font-weight:600; font-size:0.85em; }
     </style>
 </head>
 <body>
@@ -65,96 +127,558 @@
     <a href="/recipients">Recipients</a>
     <a href="/profile">SMTP Profile</a>
     <a href="/campaigns/new" class="nav-cta">+ New Campaign</a>
+    <a href="/query-builder">Query Builder</a>
 </nav>
 <marquee style="background:#1a1a1a; color:#fbbf24; padding:8px; font-size:0.85rem;">
     ⚠️ Demo Mode — Email delivery is disabled on this hosted version. Render's free tier blocks outbound SMTP connections. All other features work normally. Run locally to enable email sending.
 </marquee>
+
 <main>
     <div class="page-header">
         <h1 th:text="${campaign.id != null} ? 'Edit Campaign' : 'New Campaign'">New Campaign</h1>
-        <p>Fill in the details below to create your email campaign</p>
+        <p>Build your email using the drag and drop builder or switch to raw text mode</p>
     </div>
 
-    <div class="form-card">
-        <form th:action="${campaign.id != null ? '/campaigns/' + campaign.id : '/campaigns'}"
-              th:object="${campaign}" method="post">
+    <form th:action="${campaign.id != null ? '/campaigns/' + campaign.id : '/campaigns'}"
+          th:object="${campaign}" method="post" id="campaignForm">
 
-            <div class="form-group">
-                <label>Campaign Name</label>
-                <input type="text" th:field="*{name}" placeholder="e.g. Summer Sale 2026"/>
-                <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-            </div>
+        <div class="builder-layout">
 
-            <div class="form-group">
-                <label>Subject Line</label>
-                <div class="subject-row">
-                    <input type="text" th:field="*{subject}" id="subjectInput" placeholder="e.g. 🔥 50% Off This Weekend Only!"/>
-                    <button type="button" class="btn-generate" id="generateBtn" onclick="generateContent()">
-                        ✨ Generate
+            <!-- LEFT: WIDGET PANEL -->
+            <div class="widgets-panel">
+                <div class="panel-title">📦 Blocks</div>
+                <div class="widget-item" draggable="true" data-type="heading">
+                    <span class="widget-icon">H</span>
+                    <div><div class="widget-label">Heading</div><div class="widget-desc">Title or section header</div></div>
+                </div>
+                <div class="widget-item" draggable="true" data-type="text">
+                    <span class="widget-icon">¶</span>
+                    <div><div class="widget-label">Text</div><div class="widget-desc">Paragraph content</div></div>
+                </div>
+                <div class="widget-item" draggable="true" data-type="button">
+                    <span class="widget-icon">⬛</span>
+                    <div><div class="widget-label">Button</div><div class="widget-desc">Call to action</div></div>
+                </div>
+                <div class="widget-item" draggable="true" data-type="image">
+                    <span class="widget-icon">🖼</span>
+                    <div><div class="widget-label">Image</div><div class="widget-desc">URL-based image</div></div>
+                </div>
+                <div class="widget-item" draggable="true" data-type="divider">
+                    <span class="widget-icon">—</span>
+                    <div><div class="widget-label">Divider</div><div class="widget-desc">Horizontal line</div></div>
+                </div>
+                <div class="widget-item" draggable="true" data-type="spacer">
+                    <span class="widget-icon">↕</span>
+                    <div><div class="widget-label">Spacer</div><div class="widget-desc">Empty space</div></div>
+                </div>
+                <div class="widget-item" draggable="true" data-type="social">
+                    <span class="widget-icon">🔗</span>
+                    <div><div class="widget-label">Social Links</div><div class="widget-desc">Icon row</div></div>
+                </div>
+                <div class="widget-item" draggable="true" data-type="columns">
+                    <span class="widget-icon">⬜⬜</span>
+                    <div><div class="widget-label">Two Columns</div><div class="widget-desc">Side by side text</div></div>
+                </div>
+
+                <!-- Quick Insert -->
+                <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border);">
+                    <div class="panel-title">🎯 Quick Insert</div>
+                    <button type="button" onclick="insertTemplate('welcome')" style="width:100%; padding:8px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text2); font-size:0.78rem; cursor:pointer; margin-bottom:6px; font-family:'Inter',sans-serif;">Welcome Email</button>
+                    <button type="button" onclick="insertTemplate('promo')" style="width:100%; padding:8px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text2); font-size:0.78rem; cursor:pointer; margin-bottom:6px; font-family:'Inter',sans-serif;">Promo Email</button>
+                    <button type="button" onclick="insertTemplate('newsletter')" style="width:100%; padding:8px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text2); font-size:0.78rem; cursor:pointer; font-family:'Inter',sans-serif;">Newsletter</button>
+                </div>
+
+                <!-- Dynamic Variables -->
+                <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border);">
+                    <div class="panel-title">🏷️ Dynamic Variables</div>
+                    <p style="font-size:0.72rem; color:var(--text3); margin-bottom:10px; line-height:1.5;">
+                        Click a block first, then click a variable to insert it at your cursor.
+                    </p>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+                        <span class="var-chip" onclick="insertVariable('{FirstName}')" title="Recipient's first name">👤 {FirstName}</span>
+                        <span class="var-chip" onclick="insertVariable('{FullName}')"  title="Recipient's full name">👥 {FullName}</span>
+                        <span class="var-chip" onclick="insertVariable('{Email}')"     title="Recipient's email address">✉️ {Email}</span>
+                    </div>
+                    <input type="hidden" th:field="*{dynamicVariables}" id="dynamicVariables"/>
+                    <button type="button" onclick="openPreview()"
+                            style="width:100%; padding:8px; background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(129,140,248,0.2)); border:1px solid rgba(99,102,241,0.4); border-radius:6px; color:var(--indigo2); font-size:0.78rem; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;">
+                        👁 Preview with Sample Data
                     </button>
                 </div>
-                <div class="ai-hint">Click Generate to auto-write email content from your subject line using AI</div>
-                <div class="field-error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></div>
-                <div class="generating-msg" id="generatingMsg">⏳ Writing your email content...</div>
             </div>
 
-            <div class="form-group">
-                <label>Email Content</label>
-                <textarea th:field="*{content}" id="contentArea" placeholder="Write your email body here, or use Generate above..."></textarea>
-                <div class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+            <!-- CENTER -->
+            <div class="center-panel">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label>Campaign Name</label>
+                        <input type="text" th:field="*{name}" placeholder="e.g. Summer Sale 2026"/>
+                        <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject Line</label>
+                        <div class="subject-row">
+                            <input type="text" th:field="*{subject}" id="subjectInput" placeholder="e.g. 🔥 Hi {FirstName}, 50% Off This Weekend!"/>
+                            <button type="button" class="btn btn-generate" id="generateBtn" onclick="generateContent()">✨ AI Generate</button>
+                        </div>
+                        <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+                            <span style="font-size:0.72rem; color:var(--text3);">Use in subject:</span>
+                            <span class="var-chip" style="font-size:0.7rem; padding:2px 7px;" onclick="insertVariableInSubject('{FirstName}')">👤 {FirstName}</span>
+                            <span class="var-chip" style="font-size:0.7rem; padding:2px 7px;" onclick="insertVariableInSubject('{FullName}')">👥 {FullName}</span>
+                        </div>
+                        <div class="field-error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Scheduled Time <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+                        <input type="datetime-local" th:field="*{scheduledTime}"/>
+                    </div>
+                </div>
+
+                <div class="builder-card">
+                    <div class="builder-card-header">
+                        <span>Email Body Builder</span>
+                        <div class="builder-tabs">
+                            <button type="button" class="tab-btn active" onclick="switchTab('builder', this)">🧩 Builder</button>
+                            <button type="button" class="tab-btn" onclick="switchTab('raw', this)">📝 Raw Text</button>
+                        </div>
+                    </div>
+                    <div id="dropCanvas">
+                        <div class="drop-placeholder" id="dropPlaceholder">
+                            <div class="icon">📧</div>
+                            <p>Drag blocks here to build your email</p>
+                            <p style="font-size:0.75rem; color:var(--text3);">or use Quick Insert templates on the left</p>
+                        </div>
+                    </div>
+                    <textarea id="rawTextarea" placeholder="Write your email body here... You can use {FirstName}, {FullName}, {Email} variables."></textarea>
+                    <input type="hidden" th:field="*{content}" id="contentField"/>
+                    <div class="field-error" style="padding:0 16px 12px;" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" onclick="syncContent()">💾 Save Campaign</button>
+                    <a href="/campaigns" class="btn btn-ghost">Cancel</a>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Scheduled Time <span style="color:var(--text3); font-weight:400; text-transform:none; letter-spacing:0;">(optional)</span></label>
-                <input type="datetime-local" th:field="*{scheduledTime}"/>
+            <!-- RIGHT: PROPERTIES PANEL -->
+            <div class="props-panel" id="propsPanel">
+                <div class="panel-title">⚙️ Block Properties</div>
+                <div class="props-empty" id="propsEmpty">
+                    <div class="icon">👆</div>
+                    <p>Click a block to edit its properties</p>
+                </div>
+                <div id="propsContent" style="display:none;"></div>
             </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">💾 Save Campaign</button>
-                <a href="/campaigns" class="btn btn-ghost">Cancel</a>
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </main>
 
+<!-- Preview Modal -->
+<div class="preview-overlay" id="previewOverlay" onclick="closePreviewOnOutside(event)">
+    <div class="preview-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h3>📧 Email Preview</h3>
+            <button type="button" onclick="closePreview()" style="background:transparent; border:none; color:var(--text2); cursor:pointer; font-size:1.2rem;">✕</button>
+        </div>
+        <div class="preview-controls">
+            <label>Preview as:</label>
+            <input type="text"  id="prevName"  value="Alice Johnson"      placeholder="Full Name"  oninput="refreshPreview()"/>
+            <input type="email" id="prevEmail" value="alice@example.com"  placeholder="Email"      oninput="refreshPreview()"/>
+        </div>
+        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 14px; margin-bottom:12px; font-size:0.82rem;">
+            <span style="color:var(--text2); font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">Subject</span>
+            <div id="previewSubject" style="color:var(--text1); margin-top:4px; font-weight:500;"></div>
+        </div>
+        <div class="preview-body" id="previewBody"></div>
+        <div style="margin-top:16px; text-align:right;">
+            <button type="button" class="btn btn-ghost" onclick="closePreview()">Close</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    async function generateContent() {
-        const subject = document.getElementById('subjectInput').value.trim();
-        const btn = document.getElementById('generateBtn');
-        const msg = document.getElementById('generatingMsg');
-        const area = document.getElementById('contentArea');
+    let blocks = [];
+    let selectedBlockId = null;
+    let dragType = null;
+    let dragBlockId = null;
+    let currentTab = 'builder';
 
-        if (!subject) {
-            alert('Please enter a subject line first.');
-            return;
-        }
+    // ── DRAG FROM WIDGET PANEL ────────────────────────────────────────────────
+    document.querySelectorAll('.widget-item').forEach(item => {
+        item.addEventListener('dragstart', e => {
+            dragType = item.dataset.type;
+            dragBlockId = null;
+            e.dataTransfer.effectAllowed = 'copy';
+        });
+    });
 
-        btn.disabled = true;
-        btn.textContent = '⏳ Generating...';
-        msg.style.display = 'block';
+    // ── DROP CANVAS ───────────────────────────────────────────────────────────
+    const canvas = document.getElementById('dropCanvas');
+    canvas.addEventListener('dragover',  e => { e.preventDefault(); canvas.classList.add('drag-over'); });
+    canvas.addEventListener('dragleave', () => canvas.classList.remove('drag-over'));
+    canvas.addEventListener('drop', e => {
+        e.preventDefault();
+        canvas.classList.remove('drag-over');
+        if (dragType) { addBlock(dragType); dragType = null; }
+    });
 
-        try {
-            const res = await fetch('/campaigns/generate-content', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ subject })
-            });
-            const data = await res.json();
-            if (data.content) {
-                area.value = data.content;
-                area.style.borderColor = 'var(--green)';
-                setTimeout(() => area.style.borderColor = '', 2000);
-            } else {
-                alert('Could not generate content. Please try again.');
-            }
-        } catch (e) {
-            alert('Generation failed. Check your connection.');
-        } finally {
-            btn.disabled = false;
-            btn.textContent = '✨ Generate';
-            msg.style.display = 'none';
+    // ── ADD BLOCK ─────────────────────────────────────────────────────────────
+    function addBlock(type, data = {}) {
+        const id = 'block_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+        const block = { id, type, data };
+        blocks.push(block);
+        const placeholder = document.getElementById('dropPlaceholder');
+        if (placeholder) placeholder.style.display = 'none';
+        renderBlock(block);
+        selectBlock(id);
+    }
+
+    function renderBlock(block) {
+        const el = document.createElement('div');
+        el.className = 'canvas-block';
+        el.id = block.id;
+        el.setAttribute('draggable', 'true');
+        el.innerHTML = `
+            <div class="block-drag-handle">⠿</div>
+            <div class="block-toolbar">
+                <button type="button" onclick="moveBlock('${block.id}', -1)" title="Move up">↑</button>
+                <button type="button" onclick="moveBlock('${block.id}', 1)"  title="Move down">↓</button>
+                <button type="button" onclick="duplicateBlock('${block.id}')" title="Duplicate">⧉</button>
+                <button type="button" onclick="deleteBlock('${block.id}')"   title="Delete">✕</button>
+            </div>
+            <div class="block-content">${getBlockHTML(block)}</div>
+        `;
+        el.addEventListener('click', e => { if (!e.target.closest('.block-toolbar')) selectBlock(block.id); });
+        el.addEventListener('dragstart', e => { dragBlockId = block.id; dragType = null; e.dataTransfer.effectAllowed = 'move'; });
+        el.addEventListener('dragover',  e => { e.preventDefault(); el.style.borderColor = 'var(--indigo)'; });
+        el.addEventListener('dragleave', () => el.style.borderColor = '');
+        el.addEventListener('drop', e => {
+            e.preventDefault(); e.stopPropagation();
+            el.style.borderColor = '';
+            if (dragBlockId && dragBlockId !== block.id) { reorderBlocks(dragBlockId, block.id); dragBlockId = null; }
+        });
+        canvas.appendChild(el);
+    }
+
+    function getBlockHTML(block) {
+        const d = block.data;
+        switch(block.type) {
+            case 'heading':
+                return `<div class="block-heading" contenteditable="true" data-block="${block.id}" onblur="saveBlockData('${block.id}','text',this.innerText)">${d.text || 'Your Heading Here'}</div>`;
+            case 'text':
+                return `<textarea class="block-text" data-block="${block.id}" onblur="saveBlockData('${block.id}','text',this.value)" placeholder="Write your paragraph... use {FirstName} for personalisation">${d.text || ''}</textarea>`;
+            case 'button':
+                return `<div style="text-align:${d.align||'center'}"><div class="block-button-preview" contenteditable="true" data-block="${block.id}" onblur="saveBlockData('${block.id}','label',this.innerText)">${d.label||'Click Here'}</div></div>`;
+            case 'image':
+                return `
+                    <div class="block-image-placeholder" id="imgph_${block.id}" style="display:${d.url?'none':'flex'}"><span>🖼</span><span>Paste image URL below</span></div>
+                    <img class="block-image-preview" id="imgprev_${block.id}" src="${d.url||''}" style="display:${d.url?'block':'none'}"/>
+                    <input class="block-image-url" type="text" placeholder="https://example.com/image.jpg" value="${d.url||''}" oninput="updateImage('${block.id}',this.value)"/>`;
+            case 'divider':
+                return `<hr class="block-divider"/>`;
+            case 'spacer':
+                return `<div class="block-spacer">── spacer ──</div>`;
+            case 'social':
+                return `<div class="block-social"><div class="social-icon">𝕏</div><div class="social-icon">in</div><div class="social-icon">📷</div><div class="social-icon">f</div></div>`;
+            case 'columns':
+                return `<div class="block-columns">
+                    <div class="col-box" contenteditable="true" onblur="saveBlockData('${block.id}','col1',this.innerText)">${d.col1||'Left column...'}</div>
+                    <div class="col-box" contenteditable="true" onblur="saveBlockData('${block.id}','col2',this.innerText)">${d.col2||'Right column...'}</div>
+                </div>`;
+            default: return `<div>Unknown block</div>`;
         }
     }
+
+    // ── BLOCK OPS ─────────────────────────────────────────────────────────────
+    function saveBlockData(id, key, value) { const b = blocks.find(b=>b.id===id); if(b) b.data[key]=value; }
+
+    function updateImage(id, url) {
+        const b = blocks.find(b=>b.id===id); if(b) b.data.url=url;
+        const ph=document.getElementById('imgph_'+id), prev=document.getElementById('imgprev_'+id);
+        if(url && url.startsWith('http')) { if(ph) ph.style.display='none'; if(prev){prev.src=url;prev.style.display='block';} }
+        else { if(ph) ph.style.display='flex'; if(prev) prev.style.display='none'; }
+    }
+
+    function selectBlock(id) {
+        document.querySelectorAll('.canvas-block').forEach(el=>el.classList.remove('selected'));
+        const el=document.getElementById(id); if(el) el.classList.add('selected');
+        selectedBlockId=id; renderProps(id);
+    }
+
+    function deleteBlock(id) {
+        blocks=blocks.filter(b=>b.id!==id);
+        const el=document.getElementById(id); if(el) el.remove();
+        if(blocks.length===0){ const ph=document.getElementById('dropPlaceholder'); if(ph) ph.style.display='flex'; }
+        document.getElementById('propsContent').style.display='none';
+        document.getElementById('propsEmpty').style.display='block';
+        selectedBlockId=null;
+    }
+
+    function duplicateBlock(id) { const b=blocks.find(b=>b.id===id); if(b) addBlock(b.type,{...b.data}); }
+
+    function moveBlock(id, dir) {
+        const idx=blocks.findIndex(b=>b.id===id), newIdx=idx+dir;
+        if(newIdx<0||newIdx>=blocks.length) return;
+        [blocks[idx],blocks[newIdx]]=[blocks[newIdx],blocks[idx]]; rebuildCanvas();
+    }
+
+    function reorderBlocks(fromId, toId) {
+        const fi=blocks.findIndex(b=>b.id===fromId), ti=blocks.findIndex(b=>b.id===toId);
+        const [moved]=blocks.splice(fi,1); blocks.splice(ti,0,moved); rebuildCanvas();
+    }
+
+    function rebuildCanvas() {
+        canvas.querySelectorAll('.canvas-block').forEach(el=>el.remove());
+        blocks.forEach(b=>renderBlock(b));
+        if(selectedBlockId) selectBlock(selectedBlockId);
+    }
+
+    // ── PROPERTIES PANEL ──────────────────────────────────────────────────────
+    function renderProps(id) {
+        const block=blocks.find(b=>b.id===id); if(!block) return;
+        document.getElementById('propsEmpty').style.display='none';
+        const content=document.getElementById('propsContent'); content.style.display='block';
+        let html=`<div style="font-size:0.8rem;font-weight:600;margin-bottom:12px;color:var(--text1);">${block.type.charAt(0).toUpperCase()+block.type.slice(1)} Block</div>`;
+
+        if(block.type==='heading'||block.type==='text') {
+            html+=`
+            <div class="prop-group">
+                <label class="prop-label">Font Size</label>
+                <select class="prop-input" onchange="applyStyle('${id}','fontSize',this.value)">
+                    <option value="0.8rem">Small</option><option value="0.95rem" selected>Normal</option>
+                    <option value="1.25rem">Large</option><option value="1.75rem">X-Large</option>
+                </select>
+            </div>
+            <div class="prop-group">
+                <label class="prop-label">Text Color</label>
+                <div class="color-row">
+                    <div class="color-swatch selected" style="background:#F0F6FC" onclick="applyColor('${id}','#F0F6FC',this)"></div>
+                    <div class="color-swatch" style="background:#8B949E" onclick="applyColor('${id}','#8B949E',this)"></div>
+                    <div class="color-swatch" style="background:#6366F1" onclick="applyColor('${id}','#6366F1',this)"></div>
+                    <div class="color-swatch" style="background:#34D399" onclick="applyColor('${id}','#34D399',this)"></div>
+                    <div class="color-swatch" style="background:#FBBF24" onclick="applyColor('${id}','#FBBF24',this)"></div>
+                    <div class="color-swatch" style="background:#F472B6" onclick="applyColor('${id}','#F472B6',this)"></div>
+                </div>
+            </div>
+            <div class="prop-group">
+                <label class="prop-label">Alignment</label>
+                <div class="align-row">
+                    <button type="button" class="align-btn active" onclick="applyAlign('${id}','left',this)">Left</button>
+                    <button type="button" class="align-btn" onclick="applyAlign('${id}','center',this)">Center</button>
+                    <button type="button" class="align-btn" onclick="applyAlign('${id}','right',this)">Right</button>
+                </div>
+            </div>`;
+        }
+
+        if(block.type==='button') {
+            html+=`
+            <div class="prop-group">
+                <label class="prop-label">Button Color</label>
+                <div class="color-row">
+                    <div class="color-swatch selected" style="background:#6366F1" onclick="applyBtnColor('${id}','#6366F1',this)"></div>
+                    <div class="color-swatch" style="background:#34D399" onclick="applyBtnColor('${id}','#34D399',this)"></div>
+                    <div class="color-swatch" style="background:#F472B6" onclick="applyBtnColor('${id}','#F472B6',this)"></div>
+                    <div class="color-swatch" style="background:#FBBF24" onclick="applyBtnColor('${id}','#FBBF24',this)"></div>
+                    <div class="color-swatch" style="background:#F87171" onclick="applyBtnColor('${id}','#F87171',this)"></div>
+                </div>
+            </div>
+            <div class="prop-group">
+                <label class="prop-label">Alignment</label>
+                <div class="align-row">
+                    <button type="button" class="align-btn active" onclick="applyBtnAlign('${id}','left',this)">Left</button>
+                    <button type="button" class="align-btn" onclick="applyBtnAlign('${id}','center',this)">Center</button>
+                    <button type="button" class="align-btn" onclick="applyBtnAlign('${id}','right',this)">Right</button>
+                </div>
+            </div>
+            <div class="prop-group">
+                <label class="prop-label">Link URL</label>
+                <input class="prop-input" type="text" placeholder="https://example.com" value="${block.data.url||''}" onblur="saveBlockData('${id}','url',this.value)"/>
+            </div>`;
+        }
+
+        if(block.type==='spacer') {
+            html+=`
+            <div class="prop-group">
+                <label class="prop-label">Height</label>
+                <select class="prop-input" onchange="applySpacerHeight('${id}',this.value)">
+                    <option value="16px">Small</option><option value="32px" selected>Medium</option>
+                    <option value="48px">Large</option><option value="64px">X-Large</option>
+                </select>
+            </div>`;
+        }
+
+        html+=`<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+            <button type="button" class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="deleteBlock('${id}')">🗑 Delete Block</button>
+        </div>`;
+
+        content.innerHTML=html;
+    }
+
+    function applyStyle(id,prop,value){ const el=document.querySelector(`[data-block="${id}"]`); if(el) el.style[prop]=value; }
+    function applyColor(id,color,sw){ applyStyle(id,'color',color); sw.closest('.color-row').querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected')); sw.classList.add('selected'); }
+    function applyAlign(id,align,btn){ applyStyle(id,'textAlign',align); btn.closest('.align-row').querySelectorAll('.align-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+    function applyBtnColor(id,color,sw){ const el=document.querySelector(`#${id} .block-button-preview`); if(el) el.style.background=color; sw.closest('.color-row').querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected')); sw.classList.add('selected'); }
+    function applyBtnAlign(id,align,btn){ const el=document.querySelector(`#${id} .block-button-preview`)?.parentElement; if(el) el.style.textAlign=align; btn.closest('.align-row').querySelectorAll('.align-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+    function applySpacerHeight(id,h){ const el=document.querySelector(`#${id} .block-spacer`); if(el) el.style.height=h; }
+
+    // ── TABS ──────────────────────────────────────────────────────────────────
+    function switchTab(tab, btn) {
+        currentTab=tab;
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+        if(tab==='builder'){ canvas.style.display='block'; document.getElementById('rawTextarea').style.display='none'; }
+        else { canvas.style.display='none'; const raw=document.getElementById('rawTextarea'); raw.style.display='block'; raw.value=buildTextContent(); }
+    }
+
+    // ── QUICK TEMPLATES ───────────────────────────────────────────────────────
+    function insertTemplate(type) {
+        blocks=[]; canvas.querySelectorAll('.canvas-block').forEach(el=>el.remove());
+        const ph=document.getElementById('dropPlaceholder'); if(ph) ph.style.display='none';
+        if(type==='welcome'){
+            addBlock('heading',{text:'Welcome, {FirstName}! 👋'});
+            addBlock('divider');
+            addBlock('text',{text:'Hi {FirstName},\n\nThank you for joining us. We are excited to have you on board.'});
+            addBlock('button',{label:'Get Started →',url:'#'});
+            addBlock('spacer');
+            addBlock('text',{text:'Best regards,\nThe Team'});
+        } else if(type==='promo'){
+            addBlock('heading',{text:'Hey {FirstName} — 🔥 Limited Time Offer!'});
+            addBlock('divider');
+            addBlock('text',{text:'Hi {FirstName},\n\nDon\'t miss out on our biggest sale. Grab your discount before it expires!'});
+            addBlock('button',{label:'Shop Now — 50% Off',url:'#'});
+            addBlock('spacer');
+            addBlock('text',{text:'Offer expires soon. Terms and conditions apply.'});
+        } else if(type==='newsletter'){
+            addBlock('heading',{text:'Monthly Newsletter 📰'});
+            addBlock('divider');
+            addBlock('columns',{col1:'Latest Updates\n\nHere is what happened this month.',col2:'Upcoming Events\n\nJoin us for these exciting events soon.'});
+            addBlock('spacer');
+            addBlock('text',{text:'Thanks for reading, {FirstName}! Forward this to a friend.'});
+            addBlock('social');
+        }
+    }
+
+    // ── BUILD TEXT CONTENT ────────────────────────────────────────────────────
+    function buildTextContent() {
+        if(currentTab==='raw') return document.getElementById('rawTextarea').value;
+        let text='';
+        blocks.forEach(b=>{
+            const d=b.data;
+            switch(b.type){
+                case 'heading': text+=(d.text||'')+'\n\n'; break;
+                case 'text':    text+=(d.text||'')+'\n\n'; break;
+                case 'button':  text+='['+(d.label||'Click Here')+']'+(d.url?' → '+d.url:'')+'\n\n'; break;
+                case 'divider': text+='─────────────────────\n\n'; break;
+                case 'spacer':  text+='\n'; break;
+                case 'image':   text+='[Image: '+(d.url||'no url')+']\n\n'; break;
+                case 'social':  text+='[Follow us on Social Media]\n\n'; break;
+                case 'columns': text+=(d.col1||'')+'\n\n'+(d.col2||'')+'\n\n'; break;
+            }
+        });
+        return text.trim();
+    }
+
+    function syncContent() { document.getElementById('contentField').value=buildTextContent(); }
+
+    // ── INSERT VARIABLE ───────────────────────────────────────────────────────
+    function insertVariable(variable) {
+        if(selectedBlockId){
+            const textarea=document.querySelector(`#${selectedBlockId} textarea`);
+            const editable=document.querySelector(`#${selectedBlockId} [contenteditable="true"]`);
+            if(textarea){
+                const s=textarea.selectionStart, e=textarea.selectionEnd;
+                textarea.value=textarea.value.substring(0,s)+variable+textarea.value.substring(e);
+                textarea.selectionStart=textarea.selectionEnd=s+variable.length;
+                textarea.focus();
+                saveBlockData(selectedBlockId,'text',textarea.value);
+                showToast(`${variable} inserted ✓`);
+                return;
+            }
+            if(editable){
+                editable.focus();
+                document.execCommand('insertText',false,variable);
+                showToast(`${variable} inserted ✓`);
+                return;
+            }
+        }
+        const raw=document.getElementById('rawTextarea');
+        if(raw && raw.style.display!=='none'){
+            const s=raw.selectionStart, e=raw.selectionEnd;
+            raw.value=raw.value.substring(0,s)+variable+raw.value.substring(e);
+            raw.selectionStart=raw.selectionEnd=s+variable.length;
+            raw.focus();
+            showToast(`${variable} inserted ✓`);
+            return;
+        }
+        showToast('Click inside a text block first, then click the variable.');
+    }
+
+    function insertVariableInSubject(variable) {
+        const input=document.getElementById('subjectInput');
+        const s=input.selectionStart||input.value.length;
+        const e=input.selectionEnd||input.value.length;
+        input.value=input.value.substring(0,s)+variable+input.value.substring(e);
+        input.selectionStart=input.selectionEnd=s+variable.length;
+        input.focus();
+        showToast(`${variable} added to subject ✓`);
+    }
+
+    // ── TOAST ─────────────────────────────────────────────────────────────────
+    function showToast(msg) {
+        let t=document.getElementById('varToast');
+        if(!t){
+            t=document.createElement('div'); t.id='varToast';
+            t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--indigo);color:white;padding:8px 18px;border-radius:20px;font-size:0.82rem;font-weight:600;z-index:9999;transition:opacity 0.3s;font-family:Inter,sans-serif;';
+            document.body.appendChild(t);
+        }
+        t.textContent=msg; t.style.opacity='1';
+        clearTimeout(t._t); t._t=setTimeout(()=>t.style.opacity='0',2000);
+    }
+
+    // ── PREVIEW MODAL ─────────────────────────────────────────────────────────
+    function openPreview() { document.getElementById('previewOverlay').classList.add('open'); refreshPreview(); }
+    function closePreview() { document.getElementById('previewOverlay').classList.remove('open'); }
+    function closePreviewOnOutside(e) { if(e.target.id==='previewOverlay') closePreview(); }
+
+    function refreshPreview() {
+        const name=document.getElementById('prevName').value||'Alice Johnson';
+        const email=document.getElementById('prevEmail').value||'alice@example.com';
+        const firstName=name.split(' ')[0];
+        function replaceVars(text) {
+            return text
+                .replace(/\{FirstName\}/gi,`<span class="highlighted-var">${firstName}</span>`)
+                .replace(/\{FullName\}/gi, `<span class="highlighted-var">${name}</span>`)
+                .replace(/\{Email\}/gi,    `<span class="highlighted-var">${email}</span>`);
+        }
+        document.getElementById('previewSubject').innerHTML = replaceVars(document.getElementById('subjectInput').value||'(no subject)');
+        const body=buildTextContent();
+        document.getElementById('previewBody').innerHTML = body.split('\n').map(l=>replaceVars(l)).join('\n');
+    }
+
+    // ── AI GENERATE ───────────────────────────────────────────────────────────
+    async function generateContent() {
+        const subject=document.getElementById('subjectInput').value.trim();
+        const btn=document.getElementById('generateBtn');
+        if(!subject){alert('Please enter a subject line first.');return;}
+        btn.disabled=true; btn.textContent='⏳ Generating...';
+        try {
+            const res=await fetch('/campaigns/generate-content',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject})});
+            const data=await res.json();
+            if(data.content){
+                blocks=[]; canvas.querySelectorAll('.canvas-block').forEach(el=>el.remove());
+                const ph=document.getElementById('dropPlaceholder'); if(ph) ph.style.display='none';
+                const lines=data.content.split('\n\n');
+                lines.forEach((line,i)=>{ if(line.trim()){ if(i===0) addBlock('heading',{text:line.trim()}); else addBlock('text',{text:line.trim()}); } });
+                addBlock('button',{label:'Learn More →',url:'#'});
+            }
+        } catch(e){alert('Generation failed.');}
+        finally{btn.disabled=false;btn.textContent='✨ AI Generate';}
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded',()=>{
+        const existing=document.getElementById('contentField').value;
+        if(existing&&existing.trim()){ document.getElementById('dropPlaceholder').style.display='none'; addBlock('text',{text:existing}); }
+    });
 </script>
 </body>
 </html>

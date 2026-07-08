@@ -38,9 +38,18 @@ public class SmtpProfileService {
         SmtpProfile existing = findById(id);
         existing.setDisplayName(updated.getDisplayName());
         existing.setEmail(updated.getEmail());
-        existing.setAppPassword(updated.getAppPassword());
-        existing.setSmtpHost(updated.getSmtpHost());
-        existing.setSmtpPort(updated.getSmtpPort());
+        existing.setProvider(updated.getProvider());
+
+        if (updated.getProvider() == SmtpProfile.EmailProvider.AMAZON_SES) {
+            existing.setAwsAccessKey(updated.getAwsAccessKey());
+            existing.setAwsSecretKey(updated.getAwsSecretKey());
+            existing.setAwsRegion(updated.getAwsRegion());
+        } else {
+            existing.setAppPassword(updated.getAppPassword());
+            existing.setSmtpHost(updated.getSmtpHost());
+            existing.setSmtpPort(updated.getSmtpPort());
+        }
+
         return smtpProfileRepository.save(existing);
     }
 

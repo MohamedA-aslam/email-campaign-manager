@@ -34,6 +34,9 @@ public class Campaign {
     @Column(nullable = false)
     private String content;
 
+    @Column(name = "dynamicVariables")
+    private String dynamicVariables;
+
     @Column(name = "scheduled_time")
     private LocalDateTime scheduledTime;
 
